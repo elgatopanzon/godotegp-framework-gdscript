@@ -1,13 +1,13 @@
 ######################################################################
 # @author      : ElGatoPanzon
-# @class       : ServiceManager
-# @created     : Friday Sep 08, 2023 17:13:25 CST
+# @class       : ServiceManagerService
+# @created     : Friday Sep 08, 2023 17:05:13 CST
 # @copyright   : Copyright (c) ElGatoPanzon 2023
 #
-# @description : Implementation of the Service Locator pattern
+# @description : Base class for implementing a Service for the ServiceManager
 ######################################################################
 
-class_name ServiceManager
+class_name ServiceManagerService
 extends Node
 
 # object constructor
@@ -37,4 +37,3 @@ func _process(delta: float):
 # called during physics processing
 func _physics_process(delta: float):
 	pass
-
