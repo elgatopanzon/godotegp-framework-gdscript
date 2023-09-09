@@ -10,6 +10,8 @@
 class_name ServiceManager
 extends Node
 
+var services: Dictionary
+
 # object constructor
 func _init():
 	pass
@@ -17,24 +19,36 @@ func _init():
 
 # scene lifecycle methods
 # called when node enters the tree
-func _enter_tree():
-	pass
+# func _enter_tree():
+# 	pass
 
 # called once when node is ready
-func _ready():
-	pass
+# func _ready():
+# 	pass
 
 # called when node exits the tree
-func _exit_tree():
-	pass
+# func _exit_tree():
+# 	pass
 
 
 # process methods
 # called during main loop processing
-func _process(delta: float):
-	pass
+# func _process(delta: float):
+# 	pass
 
 # called during physics processing
-func _physics_process(delta: float):
-	pass
+# func _physics_process(delta: float):
+# 	pass
 
+
+# register a ServiceManagerService object
+func register_service(service: ServiceManagerService, service_name: String):
+	services[service_name] = service
+
+# get a registered service
+func get_service(service_name: String):
+	return services.get(service_name, null)
+
+# wraper to use property names for accessing services
+func _get(service_name):
+	return get_service(service_name)

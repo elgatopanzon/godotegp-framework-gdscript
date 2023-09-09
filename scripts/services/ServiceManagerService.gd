@@ -17,23 +17,23 @@ func _init():
 
 # scene lifecycle methods
 # called when node enters the tree
-func _enter_tree():
-	pass
+# func _enter_tree():
+# 	pass
 
 # called once when node is ready
-func _ready():
-	pass
+# func _ready():
+# 	pass
 
 # called when node exits the tree
-func _exit_tree():
-	pass
+# func _exit_tree():
+# 	pass
 
 
 # process methods
 # called during main loop processing
-func _process(delta: float):
-	pass
+# func _process(delta: float):
+# 	pass
 
 # called during physics processing
-func _physics_process(delta: float):
-	pass
+# func _physics_process(delta: float):
+# 	pass
