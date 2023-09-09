@@ -1,19 +1,18 @@
 ######################################################################
 # @author      : ElGatoPanzon
-# @class       : Main
-# @created     : Friday Sep 08, 2023 18:07:54 CST
+# @class       : ObjectPoolService
+# @created     : Friday Sep 08, 2023 18:47:24 CST
 # @copyright   : Copyright (c) ElGatoPanzon 2023
 #
-# @description : Main script for controlling the framework
+# @description : Implementation of an Object Pool for PackedScenes and other recycled objects
 ######################################################################
 
-class_name Main
-extends Node
+class_name ObjectPoolService
+extends ServiceManagerService
 
 # object constructor
 func _init():
-	# init and register services
-	Services.register_service(ObjectPoolService.new(), "ObjectPool")
+	pass
 
 
 # scene lifecycle methods
@@ -23,19 +22,19 @@ func _init():
 
 # called once when node is ready
 # func _ready():
-# 	pass
+#	pass
 
 # called when node exits the tree
 # func _exit_tree():
-# 	pass
+#	pass
 
 
 # process methods
 # called during main loop processing
 # func _process(delta: float):
-# 	pass
+#	pass
 
 # called during physics processing
 # func _physics_process(delta: float):
-# 	pass
+#	pass
 
