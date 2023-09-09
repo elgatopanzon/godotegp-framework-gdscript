@@ -10,7 +10,7 @@
 class_name ServiceManager
 extends Node
 
-var services: Dictionary
+var _services: Dictionary
 
 # object constructor
 func _init():
@@ -43,7 +43,7 @@ func _init():
 
 # register a ServiceManagerService object
 func register_service(service: ServiceManagerService, service_name: String):
-	services[service_name] = service
+	_services[service_name] = service
 
 	# call on_registered handler
 	service.on_registered()
@@ -53,14 +53,14 @@ func deregister_service(service_name):
 	var service = self.get_service(service_name)
 
 	if service:
-		services.erase(service_name)
+		_services.erase(service_name)
 
 		# call on_deregistered handler
 		service.on_deregistered()
 
 # get a registered service
 func get_service(service_name: String):
-	return services.get(service_name, null)
+	return _services.get(service_name, null)
 
 # wraper to use property names for accessing services
 func _get(service_name):
