@@ -17,10 +17,12 @@ func _init():
 
 	# logging
 	Services.register_service(LoggerService.new(), "Log")
+	Services.Log.set_default_log_level("debug")
 
 	# logging test using self as group
 	Services.Log.register_logger(Logger.new(), self)
 	Services.Log.get_collection(self).set_level("info")
+
 	Services.Log.get_collection(self).debug("log test debug")
 	Services.Log.get_collection(self).info("log test info")
 	Services.Log.get_collection(self).warning("log test warning")

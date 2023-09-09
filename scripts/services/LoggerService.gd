@@ -13,9 +13,14 @@ extends ServiceManagerService
 # hold the LoggerCollection instances
 var _logger_collections: Dictionary
 
+var _default_log_level: String
+
 # object constructor
-func _init():
-	pass
+func _init(default_log_level: String = "debug"):
+	set_default_log_level(default_log_level)
+
+func set_default_log_level(level: String):
+	_default_log_level = level
 
 # object destructor
 # func _notification(what):
@@ -53,6 +58,7 @@ func register_logger(logger: Logger, group_id):
 		print("Creating LoggerCollection for group: %s" % [group_id])
 		var lc = LoggerCollection.new()
 		lc.set_name(group_id)
+		lc.set_level(_default_log_level) # set the log level to the default
 
 		_logger_collections[group_id] = lc 
 
