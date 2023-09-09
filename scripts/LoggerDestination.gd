@@ -43,3 +43,9 @@ func _init():
 # func _physics_process(delta: float):
 #	pass
 
+# most basic implementation is writing to the console
+func write(name, level: String, value, data = null):
+	if level in ['error', 'critical']:
+		printerr("%s [%s]: %s (%s)" % [name, level, value, data])
+	else:
+		print("%s [%s]: %s (%s)" % [name, level, value, data])

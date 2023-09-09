@@ -14,7 +14,7 @@ var _logger_destinations: Array[LoggerDestination]
 
 # object constructor
 func _init():
-	pass
+	_logger_destinations.append(LoggerDestination.new())
 
 # object destructor
 # func _notification(what):
@@ -51,6 +51,5 @@ func _init():
 # value: (the text or item to log)
 # data: (any attached data dump)
 func log(name, level: String, value, data):
-	# basic implementation to log to console
-	print("%s [%s]: %s (%s)" % [name, level, value, data])
-
+	for logger_destination in _logger_destinations:
+		logger_destination.write(name, level, value, data)
