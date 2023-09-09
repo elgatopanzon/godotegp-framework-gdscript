@@ -56,28 +56,32 @@ func instantiate():
 
 # create an ininstantiated instance of an object
 func get_or_create_instance():
+	var instance
+
 	if _object_pool.size() > 0:
-		return _object_pool.pop_front()
+		instance = _object_pool.pop_front()
+
+		# call request_ready() on used object
+		if instance.has_method("request_ready"):
+			instance.request_ready()
+
 	else:
+
 		if is_custom_class(): 
 			# it's a scene or a custom class
 			# return it uninstanced
-			var instance = load(_script_path).new()
-
-			# call request_ready() on used object
-			if instance.has_method("request_ready"):
-				instance.request_ready()
+			instance = load(_script_path).new()
 
 			return instance
 		else: 
 			# it's a builtin class
-			var instance = ClassDB.instantiate(_primary_class)
+			instance = ClassDB.instantiate(_primary_class)
 
-			# call prepare() on object first time instancing it
-			if instance.has_method("prepare"):
-				instance.prepare()
+		# call prepare() on object first time instancing it
+		if instance.has_method("prepare"):
+			instance.prepare()
 
-			return instance
+	return instance
 
 # put a used object back into the pool
 func return_instance(obj: Object):
