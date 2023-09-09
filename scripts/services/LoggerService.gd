@@ -77,6 +77,10 @@ func delete_collection(group_id: String):
 func get_collection(group_id):
 	return _logger_collections.get(group_id, null)
 
+# short access to get_collection()
+func get(group_id):
+	return get_collection(group_id)
+
 # handle accessing collections as params
 func _get(group_id):
 	return get_collection(group_id)

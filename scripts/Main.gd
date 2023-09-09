@@ -21,13 +21,13 @@ func _init():
 
 	# logging test using self as group
 	Services.Log.register_logger(Logger.new(), self)
-	Services.Log.get_collection(self).set_level("info")
+	Services.Log.get(self).set_level("info")
 
-	Services.Log.get_collection(self).debug("log test debug")
-	Services.Log.get_collection(self).info("log test info")
-	Services.Log.get_collection(self).warning("log test warning")
-	Services.Log.get_collection(self).error("log test error")
-	Services.Log.get_collection(self).critical("log test critical")
+	Services.Log.get(self).debug("log test debug")
+	Services.Log.get(self).info("log test info")
+	Services.Log.get(self).warning("log test warning")
+	Services.Log.get(self).error("log test error")
+	Services.Log.get(self).critical("log test critical")
 
 
 # scene lifecycle methods
