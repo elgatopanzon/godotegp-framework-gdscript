@@ -52,13 +52,7 @@ func _init(primary_class: String, base_class: String = "", script_path: String =
 
 # return or instance a new object
 func instantiate():
-	var instance = get_or_create_instance()
-
-	# create new instance for custom classes
-	if is_custom_class():
-		return instance.new()
-	else:
-		return instance
+	return get_or_create_instance()
 
 # create an ininstantiated instance of an object
 func get_or_create_instance():
@@ -68,10 +62,22 @@ func get_or_create_instance():
 		if is_custom_class(): 
 			# it's a scene or a custom class
 			# return it uninstanced
-			return load(_script_path)
+			var instance = load(_script_path).new()
+
+			# call request_ready() on used object
+			if instance.has_method("request_ready"):
+				instance.request_ready()
+
+			return instance
 		else: 
 			# it's a builtin class
-			return ClassDB.instantiate(_primary_class)
+			var instance = ClassDB.instantiate(_primary_class)
+
+			# call prepare() on object first time instancing it
+			if instance.has_method("prepare"):
+				instance.prepare()
+
+			return instance
 
 # put a used object back into the pool
 func return_instance(obj: Object):
