@@ -19,16 +19,21 @@ func _init():
 	Services.register_service(LoggerService.new(), "Log")
 	Services.Log.set_default_log_level("debug")
 
-	# create loggers
+	# create console logger
 	var logger_console = Logger.new()
-	logger_console.add_destination(LoggerDestinationConsole.new())
+	var logger_destination_console = LoggerDestinationConsole.new()
+	logger_console.add_destination(logger_destination_console)
+
+	# add all the default LoggerTextBlocks for this type of destination
+	logger_destination_console.setup_default_text_blocks()
+
 
 	# logging test using self as group
 	Services.Log.register_logger(logger_console, self)
 	Services.Log.get(self).set_level("info")
 
 	Services.Log.get(self).debug("log test debug")
-	Services.Log.get(self).info("log test info")
+	Services.Log.get(self).info("log test info", {"test_key": "test_value"})
 	Services.Log.get(self).warning("log test warning")
 	Services.Log.get(self).error("log test error")
 	Services.Log.get(self).critical("log test critical")

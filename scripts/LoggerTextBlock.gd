@@ -10,11 +10,19 @@
 class_name LoggerTextBlock
 extends Node
 
+var _type: String
 var _value
+var _line_length: int
 
 # object constructor
 func _init():
 	pass
+
+func init(type: String, line_length: int = 10):
+	_type = type
+	_line_length = line_length
+
+	return self
 
 # called by ObjectPool after instantiate
 func prepare():
@@ -22,7 +30,16 @@ func prepare():
 
 # called by ObjectPool to reset object for reuse
 func request_ready():
+	_type = ""
 	_value = null
+	_line_length = 10
+
+func set_value(value):
+	request_ready()
+	_value = value
+
+func set_type(type: String):
+	_type = type
 
 # object destructor
 # func _notification(what):
@@ -53,6 +70,13 @@ func request_ready():
 # func _physics_process(delta: float):
 #	pass
 
+# get the value as a string
+func value_as_string():
+	return "%s" % [_value]
+
 # render the value, most basic implementation (return the value as-is)
 func render():
-	return _value
+	return value_as_padded_string()
+
+func value_as_padded_string():
+	return self.value_as_string().rpad(_line_length)

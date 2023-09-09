@@ -43,3 +43,16 @@ func _init():
 # func _physics_process(delta: float):
 #	pass
 
+# setup instances of LoggerTextBlock for console output
+func setup_default_text_blocks():
+	register_text_block(LoggerTextBlock.new().init("timestamp", 20))
+	register_text_block(LoggerTextBlock.new().init("name", 10))
+	register_text_block(LoggerTextBlock.new().init("level", 8))
+	register_text_block(LoggerTextBlock.new().init("value", 40))
+	register_text_block(LoggerTextBlock.new().init("data", 40))
+
+# write to console using LoggerTextBlocks rendering
+func write_rendered():
+	var rendered_lines = get_rendered_text_blocks()
+
+	print_rich(rendered_lines)
