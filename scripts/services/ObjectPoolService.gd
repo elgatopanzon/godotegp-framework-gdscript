@@ -4,11 +4,13 @@
 # @created     : Friday Sep 08, 2023 18:47:24 CST
 # @copyright   : Copyright (c) ElGatoPanzon 2023
 #
-# @description : Implementation of an Object Pool for PackedScenes and other recycled objects
+# @description : Service to manage instances of ObjectPool on per-class/per-scene basis
 ######################################################################
 
 class_name ObjectPoolService
 extends ServiceManagerService
+
+var object_pools: Dictionary
 
 # object constructor
 func _init():
@@ -38,3 +40,72 @@ func _init():
 # func _physics_process(delta: float):
 #	pass
 
+# handle accessing ObjectPool instances by class name
+func _get(class_instance_name):
+	return get_object_pool(class_instance_name)
+
+# return or create an instance of an ObjectPool for a class
+func get_object_pool(class_instance_name):
+	var object_pool_instance = object_pools.get(class_instance_name, null)
+
+	# check if the instance is not valid, we must create it
+	if not object_pool_instance:
+		object_pool_instance = create_object_pool_instance(class_instance_name)
+
+		# if we instanced a valid pool, register it
+		if object_pool_instance:
+			register_object_pool(object_pool_instance, class_instance_name)
+	return object_pool_instance
+
+# set the ObjectPool instance for the class name
+func register_object_pool(object_pool: ObjectPool, class_instance_name: String):
+	object_pools[class_instance_name] = object_pool
+
+# check if class_name has ObjectPool implementation
+func get_class_info(class_instance_name: String):
+	var global_class_list = ProjectSettings.get_global_class_list()
+
+	# if a class name matches the string provided, return true
+	for global_class_data in global_class_list:
+		if global_class_data['class'] == class_instance_name:
+			return global_class_data
+
+# create an ObjectPool instance for a class name
+func create_object_pool_instance(class_instance_name: String):
+	# fetch any custom class object pool class
+	var custom_class_object_pool_info = get_class_info(class_instance_name+"ObjectPool")
+
+	# if the class is a built-in class, we can create an instance easily
+	if ClassDB.can_instantiate(class_instance_name):
+		print("creating ObjectPool for %s: type builtin" % [class_instance_name])
+
+		# for now, no builtin class supports required _init() params so a basic ObjectPool instance will do
+		# if custom_class_object_pool_info:
+		# 	print("%s: has custom ObjectPool class" % [class_instance_name])
+        #
+		# 	return load(custom_class_object_pool_info.get('path')).new(class_instance_name)
+		# else:
+		# 	return ObjectPool.new(class_instance_name)
+
+		return ObjectPool.new(class_instance_name)
+
+	# if not, let's check if it's a custom class
+	else:
+		var custom_class_info = get_class_info(class_instance_name)
+
+		# valid custom class
+		if custom_class_info:
+			print("creating ObjectPool for %s: type custom" % [class_instance_name])
+
+			if custom_class_object_pool_info:
+				print("%s: has custom ObjectPool class" % [class_instance_name])
+
+				return load(custom_class_object_pool_info.get('path')).new(class_instance_name, custom_class_info.get('base'), custom_class_info.get('path'))
+			else:
+				return ObjectPool.new(class_instance_name, custom_class_info.get('base'), custom_class_info.get('path'))
+
+		# not custom class or built-in
+		else:
+			printerr("not valid class %s" % [class_instance_name])
+
+			return null
