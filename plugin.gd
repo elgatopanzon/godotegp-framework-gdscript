@@ -10,16 +10,11 @@
 @tool
 extends EditorPlugin
 
-const PLUGIN_DIR = "res://addons/godotegp-framework"
-const SERVICEMANAGER_AUTOLOAD_NAME = "Services"
-
 # scene lifecycle methods
 # called when node enters the tree
 func _enter_tree():
-	# add framework autoloads
-	add_autoload_singleton(SERVICEMANAGER_AUTOLOAD_NAME, PLUGIN_DIR+"/scripts/ServiceManager.gd")
+	pass
 
 # called when node exits the tree
 func _exit_tree():
-	# remove framework autoloads
-	remove_autoload_singleton(SERVICEMANAGER_AUTOLOAD_NAME)
+	pass
