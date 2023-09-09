@@ -37,3 +37,11 @@ func _init():
 # called during physics processing
 # func _physics_process(delta: float):
 # 	pass
+
+# called when service has been registered
+func on_registered():
+	pass
+
+# called when service has been deregistered
+func on_deregistered():
+	pass

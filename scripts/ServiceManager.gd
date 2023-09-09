@@ -45,6 +45,19 @@ func _init():
 func register_service(service: ServiceManagerService, service_name: String):
 	services[service_name] = service
 
+	# call on_registered handler
+	service.on_registered()
+
+# deregister a service from the ServiceManager
+func deregister_service(service_name):
+	var service = self.get_service(service_name)
+
+	if service:
+		services.erase(service_name)
+
+		# call on_deregistered handler
+		service.on_deregistered()
+
 # get a registered service
 func get_service(service_name: String):
 	return services.get(service_name, null)
