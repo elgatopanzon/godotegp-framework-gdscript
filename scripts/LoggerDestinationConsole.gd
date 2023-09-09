@@ -1,16 +1,14 @@
 ######################################################################
 # @author      : ElGatoPanzon
-# @class       : Logger
-# @created     : Friday Sep 08, 2023 22:22:51 CST
+# @class       : LoggerDestinationConsole
+# @created     : Saturday Sep 09, 2023 15:14:20 CST
 # @copyright   : Copyright (c) ElGatoPanzon 2023
 #
-# @description : Handle logging to multiple LoggerDestination objects
+# @description : Use LoggerTextBlock instances to write to the console
 ######################################################################
 
-class_name Logger
-extends Node
-
-var _logger_destinations: Array[LoggerDestination]
+class_name LoggerDestinationConsole
+extends LoggerDestination
 
 # object constructor
 func _init():
@@ -45,15 +43,3 @@ func _init():
 # func _physics_process(delta: float):
 #	pass
 
-# log data to configured destinations
-# name: (like a module or class name)
-# level: (severity of the log)
-# value: (the text or item to log)
-# data: (any attached data dump)
-func log(name, level: String, value, data):
-	for logger_destination in _logger_destinations:
-		logger_destination.write(name, level, value, data)
-
-# add LoggerDestination object
-func add_destination(logger_destination: LoggerDestination):
-	_logger_destinations.append(logger_destination)

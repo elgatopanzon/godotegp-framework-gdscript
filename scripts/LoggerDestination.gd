@@ -45,6 +45,10 @@ func _init():
 
 # most basic implementation is writing to the console
 func write(name, level: String, value, data = null):
+	basic_write_to_console(name, level, value, data)
+
+# function to write basic data to console without using LoggerTextBlock
+func basic_write_to_console(name, level, value, data):
 	if level in ['error', 'critical']:
 		printerr("%s [%s]: %s (%s)" % [name, level, value, data])
 	else:
