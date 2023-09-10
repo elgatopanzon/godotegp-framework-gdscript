@@ -66,6 +66,10 @@ func get_or_create_instance():
 		if instance.has_method("request_ready"):
 			instance.request_ready()
 
+		# call reinit() on used object
+		if instance.has_method("reinit"):
+			instance.reinit()
+
 	else:
 		if is_custom_class(): 
 			# it's a scene or a custom class
