@@ -21,7 +21,6 @@ func _init():
 	# object pool
 	Services.register_service(ObjectPoolService.new(), "ObjectPool")
 
-
 	# logging test using self as group
 	Services.Log.register_logger("default", self)
 	Services.Log.get(self).set_level("debug")
@@ -39,6 +38,9 @@ func _init():
 
 	Services.Log.register_logger("default", "Test")
 	Services.Log.Test.debug("log test debug")
+
+	# event service
+	Services.register_service(EventService.new(), "Events")
 
 
 # scene lifecycle methods
@@ -64,3 +66,5 @@ func _init():
 # func _physics_process(delta: float):
 # 	pass
 
+func get_logger_name():
+	return "GodotEGP.Main"
