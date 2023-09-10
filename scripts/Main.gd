@@ -30,7 +30,7 @@ func _init():
 
 	# logging test using self as group
 	Services.Log.register_logger(logger_console, self)
-	Services.Log.get(self).set_level("info")
+	Services.Log.get(self).set_level("debug")
 
 	Services.Log.get(self).debug("log test debug")
 	Services.Log.get(self).info("log test info", {"test_key": "test_value"})

@@ -92,9 +92,12 @@ func get_rendered_text_blocks():
 	while true:
 		var rendered_text_blocks = []
 
+		var text_blocks_last_line_counter = 0
+
 		for text_block in _text_blocks:
-			# reset text block
-			text_block.request_ready()
+			# reset textblock when there's no currently rendered lines
+			if len(rendered_text_lines) == 0:
+				text_block.reinit()
 
 			# set value of text block
 			if text_block._type == "timestamp":
@@ -111,8 +114,12 @@ func get_rendered_text_blocks():
 			# render the text block
 			rendered_text_blocks.append(text_block.render())
 
+			if not text_block.is_last_line():
+				text_blocks_last_line_counter += 1
+
 		rendered_text_lines.append(" | ".join(rendered_text_blocks))
 
-		break
+		if text_blocks_last_line_counter == 0:
+			break
 
-	return rendered_text_lines[0]
+	return rendered_text_lines
