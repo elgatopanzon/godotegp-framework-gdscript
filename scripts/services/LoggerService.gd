@@ -113,7 +113,7 @@ func get_collection(group_id, auto_create_from: String = "default"):
 
 	# allow dynamic creation of LoggerCollection when using String group_id
 	# note: defaults to "default" and depends on it being registered
-	if auto_create_from != "" and not logger_collection and typeof(group_id) == TYPE_STRING:
+	if auto_create_from != "" and not logger_collection and typeof(str(group_id)) == TYPE_STRING:
 		if get_collection(auto_create_from, ""):
 			register_logger(auto_create_from, str(group_id))
 			logger_collection = get_collection(str(group_id))
