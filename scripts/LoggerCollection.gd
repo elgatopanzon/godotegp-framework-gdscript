@@ -73,22 +73,22 @@ func remove_logger(logger: Logger):
 		return true
 
 # logging methods to log to all Logger instances
-func debug(value, data = null):
-	self.log("debug", value, data)
-func info(value, data = null):
-	self.log("info", value, data)
-func warning(value, data = null):
-	self.log("warning", value, data)
-func error(value, data = null):
-	self.log("error", value, data)
-func critical(value, data = null):
-	self.log("critical", value, data)
+func debug(value, data_name = null, data = null):
+	self.log("debug", value, data_name, data)
+func info(value, data_name = null, data = null):
+	self.log("info", value, data_name, data)
+func warning(value, data_name = null, data = null):
+	self.log("warning", value, data_name, data)
+func error(value, data_name = null, data = null):
+	self.log("error", value, data_name, data)
+func critical(value, data_name = null, data = null):
+	self.log("critical", value, data_name, data)
 
 # log to all Logger instances
-func log(log_level: String, value, data = null):
+func log(log_level: String, value, data_name = null, data = null):
 	if can_log_with_level(log_level):
 		for logger in _loggers:
-			var log_result = logger.log(_name, log_level, value, data)
+			var log_result = logger.log(_name, log_level, value, data_name, data)
 
 # check if we can log with a given log level
 func can_log_with_level(log_level: String):

@@ -34,10 +34,10 @@ func _init():
 	Services.Log.get(self).set_level("debug")
 
 	Services.Log.get(self).debug("log test debug")
-	Services.Log.get(self).info("log test info but a really longgg message so I can try to split it by word", ["varname", {"test_key": "test_value"}])
+	Services.Log.get(self).info("log test info but a really longgg message so I can try to split it by word", "varname", {"test_key": "test_value"})
 	Services.Log.get(self).warning("log test warning")
 	Services.Log.get(self).error("log test error")
-	Services.Log.get(self).critical("log test critical", ["bigdict", {"some_fairly_large_dict": "value", "another_val": 123}])
+	Services.Log.get(self).critical("log test critical", "bigdict", {"some_fairly_large_dict": "value", "another_val": 123})
 
 	var node_test = Node2D.new()
 	Services.Log.register_logger(logger_console, node_test)

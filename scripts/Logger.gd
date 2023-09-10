@@ -50,9 +50,9 @@ func _init():
 # level: (severity of the log)
 # value: (the text or item to log)
 # data: (any attached data dump)
-func log(name, level: String, value, data):
+func log(name, level: String, value, data_name = null, data = null):
 	for logger_destination in _logger_destinations:
-		logger_destination.write(name, level, value, data)
+		logger_destination.write(name, level, value, data_name, data)
 
 # add LoggerDestination object
 func add_destination(logger_destination: LoggerDestination):

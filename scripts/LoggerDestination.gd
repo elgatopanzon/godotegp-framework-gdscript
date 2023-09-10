@@ -53,7 +53,13 @@ func _init():
 #	pass
 
 # most basic implementation is writing to the console
-func write(name, level: String, value, data = null):
+func write(name, level: String, value, data_name = null, data = null):
+	# support array of 2 components (name + data) or single variable dump
+	if data != null:
+		data = [data_name, data]
+	else:
+		data = data_name
+
 	set_current_line_data(name, level, value, data)
 
 	write_rendered()
