@@ -14,6 +14,14 @@ var object_pools: Dictionary
 
 # object constructor
 func _init():
+	Services.Log.register_logger("default", get_logger_name())
+
+func logger():
+	return Services.Log.get(get_logger_name())
+
+func get_logger_name():
+	return "ObjectPoolService"
+
 	pass
 
 
@@ -77,12 +85,12 @@ func create_object_pool_instance(class_instance_name: String):
 
 	# if the class is a built-in class, we can create an instance easily
 	if ClassDB.can_instantiate(class_instance_name):
-		print("creating ObjectPool for %s: type builtin" % [class_instance_name])
+		logger().debug("creating ObjectPool", "class", class_instance_name)
 
 		# for now, no builtin class supports required _init() params so a basic ObjectPool instance will do
 		# if custom_class_object_pool_info:
-		# 	print("%s: has custom ObjectPool class" % [class_instance_name])
-        #
+		#	  logger().debug("ObjectPool custom class found", "class", class_instance_name)
+		#
 		# 	return load(custom_class_object_pool_info.get('path')).new(class_instance_name)
 		# else:
 		# 	return ObjectPool.new(class_instance_name)
@@ -95,10 +103,10 @@ func create_object_pool_instance(class_instance_name: String):
 
 		# valid custom class
 		if custom_class_info:
-			print("creating ObjectPool for %s: type custom" % [class_instance_name])
+			logger().debug("creating ObjectPool", "class", class_instance_name)
 
 			if custom_class_object_pool_info:
-				print("%s: has custom ObjectPool class" % [class_instance_name])
+				logger().debug("ObjectPool custom class found", "class", class_instance_name)
 
 				return load(custom_class_object_pool_info.get('path')).new(class_instance_name, custom_class_info.get('base'), custom_class_info.get('path'))
 			else:
@@ -106,6 +114,6 @@ func create_object_pool_instance(class_instance_name: String):
 
 		# not custom class or built-in
 		else:
-			printerr("not valid class %s" % [class_instance_name])
+			logger().critical("not valid class", "class", class_instance_name)
 
 			return null

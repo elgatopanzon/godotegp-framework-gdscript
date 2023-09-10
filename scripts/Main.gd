@@ -13,12 +13,14 @@ extends Node
 # object constructor
 func _init():
 	# init and register services
+	# logging
+	Services.register_service(LoggerService.new(), "Log")
+
+	Services.Log.set_default_log_level("debug")
+
 	# object pool
 	Services.register_service(ObjectPoolService.new(), "ObjectPool")
 
-	# logging
-	Services.register_service(LoggerService.new(), "Log")
-	Services.Log.set_default_log_level("debug")
 
 	# logging test using self as group
 	Services.Log.register_logger("default", self)
