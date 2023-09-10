@@ -20,17 +20,6 @@ func _init():
 	Services.register_service(LoggerService.new(), "Log")
 	Services.Log.set_default_log_level("debug")
 
-	# create console logger
-	var logger_console = Logger.new()
-	var logger_destination_console = LoggerDestinationConsole.new()
-	logger_console.add_destination(logger_destination_console)
-
-	# add all the default LoggerTextBlocks for this type of destination
-	logger_destination_console.setup_default_text_blocks()
-
-	# add logger as reusable collection
-	Services.Log.register_logger(logger_console, "default")
-
 	# logging test using self as group
 	Services.Log.register_logger("default", self)
 	Services.Log.get(self).set_level("debug")

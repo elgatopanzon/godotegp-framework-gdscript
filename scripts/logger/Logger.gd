@@ -57,3 +57,5 @@ func log(name, level: String, value, data_name = null, data = null):
 # add LoggerDestination object
 func add_destination(logger_destination: LoggerDestination):
 	_logger_destinations.append(logger_destination)
+
+	return self

@@ -19,6 +19,32 @@ var _default_log_level: String
 func _init(default_log_level: String = "debug"):
 	set_default_log_level(default_log_level)
 
+	# create self LoggerCollection to allow us to log from here as early as possible
+	var lc = LoggerCollection.new()
+	lc.set_name(get_logger_name())
+	lc.set_level(_default_log_level) # set the log level to the default
+
+	_logger_collections[get_logger_name()] = lc 
+
+	# setup default loggers
+	var logger_console = Logger.new()
+	var logger_destination_console = LoggerDestinationConsole.new()
+	logger_console.add_destination(logger_destination_console)
+
+	# add all the default LoggerTextBlocks for this type of destination
+	logger_destination_console.setup_default_text_blocks()
+
+	# add logger as reusable collection
+	self.register_logger(logger_console, "default")
+
+	self.register_logger("default", get_logger_name())
+
+func logger():
+	return self.get(get_logger_name())
+
+func get_logger_name():
+	return "LoggerService"
+
 func set_default_log_level(level: String):
 	_default_log_level = level
 
@@ -53,10 +79,10 @@ func set_default_log_level(level: String):
 
 # register a Logger instance with group ID
 func register_logger(logger, group_id):
-
 	# init a LoggerCollection for this logger
 	if not _logger_collections.get(group_id, null):
-		print("Creating LoggerCollection for group: %s" % [group_id])
+		logger().debug("Creating LoggerCollection for group", "group_id", group_id)
+
 		var lc = LoggerCollection.new()
 		lc.set_name(group_id)
 		lc.set_level(_default_log_level) # set the log level to the default
