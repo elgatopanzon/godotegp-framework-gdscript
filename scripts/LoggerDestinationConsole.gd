@@ -45,11 +45,37 @@ func _init():
 
 # setup instances of LoggerTextBlock for console output
 func setup_default_text_blocks():
-	register_text_block(LoggerTextBlock.new().init("timestamp", 20))
-	register_text_block(LoggerTextBlock.new().init("name", 20))
-	register_text_block(LoggerTextBlock.new().init("level", 10))
-	register_text_block(LoggerTextBlock.new().init("value", 40))
-	register_text_block(LoggerTextBlock.new().init("data", 10))
+	var processor_line_from_level = LoggerTextProcessorLineColorFromLevel.new().init(self)
+	var processor_bold = LoggerTextProcessorBold.new().init(self)
+	var processor_pad = LoggerTextProcessorPad.new().init(self)
+
+	register_text_block(LoggerTextBlock.new().init("separator", 0, [
+		processor_line_from_level
+		]))
+
+	register_text_block(LoggerTextBlock.new().init("timestamp", 20, [
+		LoggerTextProcessorPad.new().init(self).set_pad(20),
+		processor_line_from_level,
+		]))
+	register_text_block(LoggerTextBlock.new().init("name", 20, [
+		LoggerTextProcessorPad.new().init(self).set_pad(20),
+		processor_line_from_level,
+		]))
+
+	register_text_block(LoggerTextBlock.new().init("level", 10, [
+		LoggerTextProcessorPad.new().init(self).set_pad(10),
+		processor_line_from_level,
+		processor_bold,
+		]))
+
+	register_text_block(LoggerTextBlock.new().init("value", 40, [
+		LoggerTextProcessorPad.new().init(self).set_pad(40),
+		processor_line_from_level,
+		]))
+	register_text_block(LoggerTextBlock.new().init("data", 40, [
+		LoggerTextProcessorPad.new().init(self).set_pad(40),
+		processor_line_from_level,
+		]))
 
 # write to console using LoggerTextBlocks rendering
 func write_rendered():

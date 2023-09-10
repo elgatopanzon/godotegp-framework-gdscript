@@ -17,13 +17,17 @@ var _line_length: int
 var _line_current: int = 0
 var _line_strings: Dictionary
 
+var _text_processors: Array[LoggerTextProcessor]
+
 # object constructor
 func _init():
 	pass
 
-func init(type: String, line_length: int = 0):
+func init(type: String, line_length: int = 0, text_processors: Array[LoggerTextProcessor] = []):
 	_type = type
 	_line_length = line_length
+
+	_text_processors = text_processors
 
 	return self
 
@@ -73,12 +77,26 @@ func set_type(type: String):
 func value_as_string():
 	return "%s" % [_value]
 
-# render the value, most basic implementation (return the value as-is)
-func render():
+# pre-render the value before processing
+func pre_render():
+	var pre_rendered = value_as_string()
+	
 	if _line_length > 0:
-		return get_next_line()
-	else:
-		return value_as_padded_string()
+		pre_rendered = get_next_line()
+
+	# apply type-based pre_renders
+	if _type == "level":
+		pre_rendered = pre_rendered.to_upper()
+
+	return pre_rendered
+
+func render():
+	var rendered = pre_render()
+
+	for text_processor in _text_processors:
+		rendered = text_processor.process_value(rendered)
+
+	return rendered
 
 # return the value, but padded
 func value_as_padded_string():
@@ -92,7 +110,7 @@ func get_next_line():
 
 	_line_current += 1
 
-	return current_line_string.rpad(_line_length)
+	return current_line_string
 
 # check if current line is last
 func is_last_line():

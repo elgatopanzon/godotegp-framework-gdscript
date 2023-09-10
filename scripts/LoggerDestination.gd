@@ -89,6 +89,7 @@ func setup_default_text_blocks():
 func get_rendered_text_blocks():
 	var rendered_text_lines = []
 
+	var separate_text_block_string = ""
 	while true:
 		var rendered_text_blocks = []
 
@@ -111,13 +112,22 @@ func get_rendered_text_blocks():
 			elif text_block._type == "data":
 				text_block.set_value(_line_data)
 
+			elif text_block._type == "separator":
+				separate_text_block_string = " | "
+				for text_processor in text_block._text_processors:
+					separate_text_block_string = text_processor.process_value(separate_text_block_string)
+				continue
+
 			# render the text block
 			rendered_text_blocks.append(text_block.render())
 
 			if not text_block.is_last_line():
 				text_blocks_last_line_counter += 1
 
-		rendered_text_lines.append(" | ".join(rendered_text_blocks))
+		# use the first text block as separater
+		var separate_text_block = _text_blocks[0]
+
+		rendered_text_lines.append(separate_text_block_string.join(rendered_text_blocks))
 
 		if text_blocks_last_line_counter == 0:
 			break
