@@ -43,5 +43,5 @@ func _init():
 # func _physics_process(delta: float):
 #	pass
 
-func process(value):
+func process(value, value_original):
 	return "[b]%s[/b]" % [value]

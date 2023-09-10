@@ -94,7 +94,7 @@ func render():
 	var rendered = pre_render()
 
 	for text_processor in _text_processors:
-		rendered = text_processor.process_value(rendered)
+		rendered = text_processor.process_value(rendered, _value)
 
 	return rendered
 

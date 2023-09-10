@@ -7,6 +7,7 @@
 # @description : Main script for controlling the framework
 ######################################################################
 
+class_name GodotEGPFramework
 extends Node
 
 # object constructor
@@ -37,6 +38,14 @@ func _init():
 	Services.Log.get(self).warning("log test warning")
 	Services.Log.get(self).error("log test error")
 	Services.Log.get(self).critical("log test critical")
+
+	var node_test = Node2D.new()
+	Services.Log.register_logger(logger_console, node_test)
+	Services.Log.get(node_test).set_level("debug")
+	Services.Log.get(node_test).debug("log test debug")
+
+	Services.Log.register_logger(logger_console, "Test")
+	Services.Log.Test.debug("log test debug")
 
 
 # scene lifecycle methods

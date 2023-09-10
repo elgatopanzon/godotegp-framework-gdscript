@@ -44,7 +44,7 @@ func _init():
 #	pass
 
 # apply bbcode based on log level from parent LoggerDestination
-func process(value):
+func process(value, value_original):
 	match _logger_destination_owner._line_level:
 		"debug":
 			pass

@@ -44,7 +44,7 @@ func _init():
 #	pass
 
 # apply bbcode colour based on log level from parent LoggerDestination
-func process(value):
+func process(value, value_original):
 	var bgcolor = ""
 	var fgcolor = ""
 

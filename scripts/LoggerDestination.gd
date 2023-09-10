@@ -115,7 +115,7 @@ func get_rendered_text_blocks():
 			elif text_block._type == "separator":
 				separate_text_block_string = " | "
 				for text_processor in text_block._text_processors:
-					separate_text_block_string = text_processor.process_value(separate_text_block_string)
+					separate_text_block_string = text_processor.process_value(separate_text_block_string, separate_text_block_string)
 				continue
 
 			# render the text block

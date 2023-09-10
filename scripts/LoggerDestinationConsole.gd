@@ -59,8 +59,9 @@ func setup_default_text_blocks():
 		LoggerTextProcessorPad.new().init(self).set_pad(20),
 		processor_line_from_level,
 		]))
-	register_text_block(LoggerTextBlock.new().init("name", 20, [
-		LoggerTextProcessorPad.new().init(self).set_pad(20),
+	register_text_block(LoggerTextBlock.new().init("name", 25, [
+		LoggerTextProcessorName.new().init(self),
+		LoggerTextProcessorPad.new().init(self).set_pad(25),
 		processor_line_from_level,
 		]))
 

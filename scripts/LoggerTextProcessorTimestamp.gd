@@ -43,7 +43,7 @@ func _init():
 # func _physics_process(delta: float):
 #	pass
 
-func process(value):
+func process(value, value_original):
 	var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
 	var current_time = Time.get_datetime_dict_from_system()

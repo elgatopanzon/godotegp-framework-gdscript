@@ -1,25 +1,18 @@
 ######################################################################
 # @author      : ElGatoPanzon
-# @class       : LoggerTextProcessorPad
-# @created     : Saturday Sep 09, 2023 20:17:34 CST
+# @class       : LoggerTextProcessorName
+# @created     : Saturday Sep 09, 2023 21:07:12 CST
 # @copyright   : Copyright (c) ElGatoPanzon 2023
 #
-# @description : Pad output based on set value 
+# @description : Format the name value based on data type
 ######################################################################
 
-class_name LoggerTextProcessorPad
+class_name LoggerTextProcessorName
 extends LoggerTextProcessor
-
-var _pad: int = 0
 
 # object constructor
 func _init():
 	pass
-
-func set_pad(value: int = 0):
-	_pad = value
-
-	return self
 
 # object destructor
 # func _notification(what):
@@ -51,7 +44,22 @@ func set_pad(value: int = 0):
 #	pass
 
 func process(value, value_original):
-	if _pad > 0:
-		return value.rpad(_pad)
+	if typeof(value_original) == TYPE_STRING:
+		return value
+	elif value_original.has_method("get_logger_name"):
+		return value_original.get_logger_name()
+	elif value_original.has_method("get_script"):
+		if value_original.get_script():
+			return class_info_to_string(get_class_info_from_path(value_original.get_script().get_path()), value_original)
+		else:
+			return value
 	else:
 		return value
+
+func get_class_info_from_path(path):
+	for global_class in ProjectSettings.get_global_class_list():
+		if global_class['path'] == path:
+			return global_class
+
+func class_info_to_string(class_info, value_original):
+	return "%s => %s (%s)" % [class_info.base, class_info.class, value_original]

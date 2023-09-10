@@ -51,17 +51,17 @@ func init(logger_destination_owner: LoggerDestination):
 #	pass
 
 # pre-process function
-func pre_process(value):
+func pre_process(value, value_original):
 	return value
 
 # post-process function
-func post_process(value):
+func post_process(value, value_original):
 	return value
 
 # main process function
-func process(value):
+func process(value, value_original):
 	return value
 
 # called by the LoggerDestination to run the process chain
-func process_value(value):
-	return pre_process(process(post_process(value)))
+func process_value(value, value_original):
+	return pre_process(process(post_process(value, value_original), value_original), value_original)
