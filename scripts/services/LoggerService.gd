@@ -52,7 +52,8 @@ func set_default_log_level(level: String):
 #	pass
 
 # register a Logger instance with group ID
-func register_logger(logger: Logger, group_id):
+func register_logger(logger, group_id):
+
 	# init a LoggerCollection for this logger
 	if not _logger_collections.get(group_id, null):
 		print("Creating LoggerCollection for group: %s" % [group_id])
@@ -62,8 +63,15 @@ func register_logger(logger: Logger, group_id):
 
 		_logger_collections[group_id] = lc 
 
-	# add Logger instance to collection
-	return _logger_collections[group_id].add_logger(logger)
+	# add Logger instance to collection when it's a Logger
+	if is_instance_of(logger, Logger):
+		return _logger_collections[group_id].add_logger(logger)
+
+	# copy an existing collection of Loggers
+	elif typeof(logger) == TYPE_STRING:
+		if _logger_collections.get(logger, null):
+			for existing_logger in _logger_collections[logger]._loggers:
+				_logger_collections[group_id].add_logger(existing_logger)
 
 # deregister a Logger from a group
 func deregister_logger(logger: Logger, group_id: String):

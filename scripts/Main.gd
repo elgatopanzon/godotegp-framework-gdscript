@@ -28,9 +28,11 @@ func _init():
 	# add all the default LoggerTextBlocks for this type of destination
 	logger_destination_console.setup_default_text_blocks()
 
+	# add logger as reusable collection
+	Services.Log.register_logger(logger_console, "default")
 
 	# logging test using self as group
-	Services.Log.register_logger(logger_console, self)
+	Services.Log.register_logger("default", self)
 	Services.Log.get(self).set_level("debug")
 
 	Services.Log.get(self).debug("log test debug")
@@ -40,11 +42,11 @@ func _init():
 	Services.Log.get(self).critical("log test critical", "bigdict", {"some_fairly_large_dict": "value", "another_val": 123})
 
 	var node_test = Node2D.new()
-	Services.Log.register_logger(logger_console, node_test)
+	Services.Log.register_logger("default", node_test)
 	Services.Log.get(node_test).set_level("debug")
 	Services.Log.get(node_test).debug("log test debug")
 
-	Services.Log.register_logger(logger_console, "Test")
+	Services.Log.register_logger("default", "Test")
 	Services.Log.Test.debug("log test debug")
 
 
