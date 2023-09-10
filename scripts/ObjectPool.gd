@@ -19,6 +19,7 @@ var _script_path: String
 
 # pool of objects
 var _object_pool: Array[Object]
+var _max_size: int = 100 # won't pool more than this many objects
 
 # object constructor takes info about the class
 func _init(primary_class: String, base_class: String = "", script_path: String = ""):
@@ -66,7 +67,6 @@ func get_or_create_instance():
 			instance.request_ready()
 
 	else:
-
 		if is_custom_class(): 
 			# it's a scene or a custom class
 			# return it uninstanced
@@ -85,7 +85,10 @@ func get_or_create_instance():
 
 # put a used object back into the pool
 func return_instance(obj: Object):
-	_object_pool.push_back(obj)
+	if len(_object_pool) < _max_size:
+		_object_pool.push_back(obj)
+	else:
+		obj.queue_free()
 
 # check if the class is custom or builtin
 # if there's a script path then it's a custom class
