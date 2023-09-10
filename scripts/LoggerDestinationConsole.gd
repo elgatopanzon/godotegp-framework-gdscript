@@ -46,6 +46,7 @@ func _init():
 # setup instances of LoggerTextBlock for console output
 func setup_default_text_blocks():
 	var processor_line_from_level = LoggerTextProcessorLineColorFromLevel.new().init(self)
+	var processor_log_level = LoggerTextProcessorLogLevel.new().init(self)
 	var processor_bold = LoggerTextProcessorBold.new().init(self)
 	var processor_pad = LoggerTextProcessorPad.new().init(self)
 
@@ -64,6 +65,7 @@ func setup_default_text_blocks():
 
 	register_text_block(LoggerTextBlock.new().init("level", 10, [
 		LoggerTextProcessorPad.new().init(self).set_pad(10),
+		processor_log_level,
 		processor_line_from_level,
 		processor_bold,
 		]))
