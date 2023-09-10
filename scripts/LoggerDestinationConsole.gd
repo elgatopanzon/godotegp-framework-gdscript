@@ -48,8 +48,8 @@ func setup_default_text_blocks():
 	register_text_block(LoggerTextBlock.new().init("timestamp", 20))
 	register_text_block(LoggerTextBlock.new().init("name", 20))
 	register_text_block(LoggerTextBlock.new().init("level", 10))
-	register_text_block(LoggerTextBlock.new().init("value", 10))
-	register_text_block(LoggerTextBlock.new().init("data", 40))
+	register_text_block(LoggerTextBlock.new().init("value", 40))
+	register_text_block(LoggerTextBlock.new().init("data"))
 
 # write to console using LoggerTextBlocks rendering
 func write_rendered():

@@ -20,7 +20,7 @@ var _line_current: int = 0
 func _init():
 	pass
 
-func init(type: String, line_length: int = 10):
+func init(type: String, line_length: int = 0):
 	_type = type
 	_line_length = line_length
 
@@ -70,7 +70,10 @@ func value_as_string():
 
 # render the value, most basic implementation (return the value as-is)
 func render():
-	return get_next_line()
+	if _line_length > 0:
+		return get_next_line()
+	else:
+		return value_as_padded_string()
 
 func value_as_padded_string():
 	return self.value_as_string().rpad(_line_length)
@@ -84,7 +87,10 @@ func get_next_line():
 	return current_line_string.rpad(_line_length)
 
 func is_last_line():
-	return _line_current > get_line_count()
+	if _line_length > 0:
+		return _line_current > get_line_count()
+	else:
+		return true
 
 func get_line_count():
 	return len(value_as_string()) / _line_length
