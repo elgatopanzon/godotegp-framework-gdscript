@@ -55,6 +55,7 @@ func setup_default_text_blocks():
 		]))
 
 	register_text_block(LoggerTextBlock.new().init("timestamp", 20, [
+		LoggerTextProcessorTimestamp.new().init(self),
 		LoggerTextProcessorPad.new().init(self).set_pad(20),
 		processor_line_from_level,
 		]))
