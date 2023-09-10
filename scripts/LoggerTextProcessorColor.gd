@@ -1,18 +1,25 @@
 ######################################################################
 # @author      : ElGatoPanzon
-# @class       : LoggerTextProcessorLogLevel
-# @created     : Saturday Sep 09, 2023 20:43:01 CST
+# @class       : LoggerTextProcessorColor
+# @created     : Saturday Sep 09, 2023 22:02:36 CST
 # @copyright   : Copyright (c) ElGatoPanzon 2023
 #
-# @description : Apply processing based on log level
+# @description : Format text with a specific bbcode color
 ######################################################################
 
-class_name LoggerTextProcessorLogLevel
+class_name LoggerTextProcessorColor
 extends LoggerTextProcessor
+
+var _color: String = "white"
 
 # object constructor
 func _init():
 	pass
+
+func set_color(color: String):
+	_color = color
+
+	return self
 
 # object destructor
 # func _notification(what):
@@ -43,19 +50,5 @@ func _init():
 # func _physics_process(delta: float):
 #	pass
 
-# apply bbcode based on log level from parent LoggerDestination
 func process(value, value_original):
-	match _logger_destination_owner._line_level:
-		"debug":
-			value = "[color=green]%s[/color]" % [value]
-		"info":
-			value = "[color=green]%s[/color]" % [value]
-		"warning":
-			value = "[color=orange]%s[/color]" % [value]
-		"error":
-			value = "[color=red]%s[/color]" % [value]
-		"critical":
-			value = "[i][b][bgcolor=red][color=white]%s[/color][/bgcolor][/b][/i]" % [value.substr(0, len(value) - 1)]
-			pass
-
-	return value
+	return "[color=%s]%s[/color]" % [_color, value]

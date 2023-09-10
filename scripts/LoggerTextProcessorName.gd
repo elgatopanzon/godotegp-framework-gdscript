@@ -43,6 +43,15 @@ func _init():
 # func _physics_process(delta: float):
 #	pass
 
+func process_value(value, value_original):
+	value = process(value, value_original)
+
+	if self._logger_line_current > 1:
+		return "[bgcolor=black][fgcolor=black]%s[/fgcolor][/bgcolor]" % [value]
+	else:
+		return value
+
+
 func process(value, value_original):
 	if typeof(value_original) == TYPE_STRING:
 		return value

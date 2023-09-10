@@ -94,6 +94,7 @@ func render():
 	var rendered = pre_render()
 
 	for text_processor in _text_processors:
+		text_processor.set_current_line(_line_current)
 		rendered = text_processor.process_value(rendered, _value)
 
 	return rendered
@@ -140,7 +141,8 @@ func get_line_text():
 
 		# if the single word is larger than the max, just put it as-is
 		if len(current_line_word) > _line_length:
-			value_lines[value_line_line_count].append(current_line_word)
+			value_lines[value_line_line_count+1] = []
+			value_lines[value_line_line_count+1].append(current_line_word)
 			value_line_line_count += 1
 			value_line_word_count += 1
 			value_line_char_count = 0

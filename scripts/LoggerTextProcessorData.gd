@@ -1,13 +1,13 @@
 ######################################################################
 # @author      : ElGatoPanzon
-# @class       : LoggerTextProcessorLogLevel
-# @created     : Saturday Sep 09, 2023 20:43:01 CST
+# @class       : LoggerTextProcessorData
+# @created     : Saturday Sep 09, 2023 22:16:29 CST
 # @copyright   : Copyright (c) ElGatoPanzon 2023
 #
-# @description : Apply processing based on log level
+# @description : Format the data output of the logger
 ######################################################################
 
-class_name LoggerTextProcessorLogLevel
+class_name LoggerTextProcessorData
 extends LoggerTextProcessor
 
 # object constructor
@@ -43,19 +43,21 @@ func _init():
 # func _physics_process(delta: float):
 #	pass
 
-# apply bbcode based on log level from parent LoggerDestination
 func process(value, value_original):
-	match _logger_destination_owner._line_level:
-		"debug":
-			value = "[color=green]%s[/color]" % [value]
-		"info":
-			value = "[color=green]%s[/color]" % [value]
-		"warning":
-			value = "[color=orange]%s[/color]" % [value]
-		"error":
-			value = "[color=red]%s[/color]" % [value]
-		"critical":
-			value = "[i][b][bgcolor=red][color=white]%s[/color][/bgcolor][/b][/i]" % [value.substr(0, len(value) - 1)]
-			pass
+	if self._logger_line_current > 1:
+		return ""
 
-	return value
+	var data_name = ""
+	var data_value = ""
+	if typeof(value_original) == TYPE_ARRAY:
+		if len(value_original) == 2:
+			data_name = value_original[0]
+			data_value = value_original[1]
+
+	if data_name:
+		return "[color=cyan]%s[/color][color=gray]=[/color][color=pink]%s[/color]" % [data_name, data_value]
+
+	elif value_original == null:
+		return ""
+	else:
+		return value

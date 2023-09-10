@@ -12,6 +12,8 @@ extends Node
 
 var _logger_destination_owner: LoggerDestination
 
+var _logger_line_current: int
+
 # object constructor
 func _init():
 	pass
@@ -20,6 +22,9 @@ func init(logger_destination_owner: LoggerDestination):
 	_logger_destination_owner = logger_destination_owner
 
 	return self
+
+func set_current_line(line_no):
+	_logger_line_current = line_no
 
 # object destructor
 # func _notification(what):

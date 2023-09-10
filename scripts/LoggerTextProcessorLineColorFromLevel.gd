@@ -53,16 +53,16 @@ func process(value, value_original):
 			bgcolor = "black"
 			fgcolor = "green"
 		"info":
-			bgcolor = "cyan"
-			fgcolor = "black"
+			bgcolor = "black"
+			fgcolor = "cyan"
 		"warning":
-			bgcolor = "orange"
-			fgcolor = "black"
+			bgcolor = "black"
+			fgcolor = "orange"
 		"error":
-			bgcolor = "red"
-			fgcolor = "white"
+			bgcolor = "black"
+			fgcolor = "red"
 		"critical":
-			bgcolor = "red"
-			fgcolor = "white"
+			bgcolor = "black"
+			fgcolor = "red"
 
-	return "[bgcolor=%s][color=%s]%s[/color][/bgcolor]" % [bgcolor, fgcolor, value]
+	return "[bgcolor=%s]%s[/bgcolor]" % [bgcolor, value]

@@ -112,6 +112,11 @@ func get_rendered_text_blocks():
 			elif text_block._type == "data":
 				text_block.set_value(_line_data)
 
+				if not _line_data or text_block._line_current >= 1:
+					continue
+			elif text_block._type == "end":
+				text_block.set_value("")
+
 			elif text_block._type == "separator":
 				separate_text_block_string = " | "
 				for text_processor in text_block._text_processors:
