@@ -80,9 +80,11 @@ func render():
 	else:
 		return value_as_padded_string()
 
+# return the value, but padded
 func value_as_padded_string():
 	return self.value_as_string().rpad(_line_length)
 
+# return the next line of text
 func get_next_line():
 	var current_line_string = ""
 	if _line_strings.get(_line_current, null):
@@ -92,15 +94,18 @@ func get_next_line():
 
 	return current_line_string.rpad(_line_length)
 
+# check if current line is last
 func is_last_line():
 	if _line_length > 0:
 		return _line_current > get_line_count()
 	else:
 		return true
 
+# deprecated: return line count based on line length
 func get_line_count():
 	return len(value_as_string()) / _line_length
 
+# return a dict with the key for each line of text to print
 func get_line_text():
 	var value_words = value_as_string().split(" ")
 	var value_lines = {}
