@@ -93,3 +93,6 @@ func write_rendered():
 
 	for line in rendered_lines:
 		print_rich(line)
+
+		if _line_level in ['warning', 'error', 'critical']:
+			basic_write_to_console()

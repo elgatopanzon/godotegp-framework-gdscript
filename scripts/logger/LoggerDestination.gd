@@ -77,10 +77,14 @@ func write_rendered():
 
 # function to write basic data to console without using LoggerTextBlock
 func basic_write_to_console():
-	if _line_level in ['error', 'critical']:
-		printerr("%s [%s]: %s (%s)" % [_line_name, _line_level, _line_value, _line_data])
+	var line_formatted = "%s [%s]: %s (%s)" % [_line_name, _line_level, _line_value, _line_data]
+	if _line_level in ['warning', 'error', 'critical']:
+		if _line_level == "warning":
+			push_warning(line_formatted)
+		else:
+			push_error(line_formatted)
 	else:
-		print("%s [%s]: %s (%s)" % [_line_name, _line_level, _line_value, _line_data])
+		print(line_formatted)
 
 # register a LoggerTextBlock instance for a data value
 func register_text_block(text_block: LoggerTextBlock):
