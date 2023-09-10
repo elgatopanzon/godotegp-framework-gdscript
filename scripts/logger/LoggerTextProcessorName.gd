@@ -46,10 +46,12 @@ func _init():
 func process_value(value, value_original):
 	value = process(value, value_original)
 
-	if self._logger_line_current > 1:
-		return "[bgcolor=black][fgcolor=black]%s[/fgcolor][/bgcolor]" % [value]
-	else:
-		return value
+	# if self._logger_line_current > 1:
+	# 	return "[bgcolor=black][fgcolor=black]%s[/fgcolor][/bgcolor]" % [value]
+	# else:
+	# 	return value
+
+	return value
 
 
 func process(value, value_original):

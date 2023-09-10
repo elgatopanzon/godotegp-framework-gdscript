@@ -50,5 +50,11 @@ func set_color(color: String):
 # func _physics_process(delta: float):
 #	pass
 
+func get_color():
+	if self._logger_line_current > 1:
+		return "black"
+	else:
+		return _color
+
 func process(value, value_original):
-	return "[color=%s]%s[/color]" % [_color, value]
+	return "[color=%s]%s[/color]" % [get_color(), value]
