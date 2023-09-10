@@ -16,6 +16,8 @@ var _loggers: Array[Logger]
 
 var _levels = ["debug", "info", "warning", "error", "critical"]
 
+var _enabled: bool = true
+
 # object constructor
 func _init(level: String = "debug"):
 	set_level(level)
@@ -28,6 +30,18 @@ func set_level(level: String):
 		_level = level
 	else:
 		printerr("Invalid log level %s" % [level])
+
+func enable():
+	set_enabled(true)
+
+func disable():
+	set_enabled(false)
+
+func set_enabled(state):
+	_enabled = state
+
+func is_enabled():
+	return _enabled
 
 # object destructor
 # func _notification(what):
@@ -86,7 +100,7 @@ func critical(value, data_name = null, data = null):
 
 # log to all Logger instances
 func log(log_level: String, value, data_name = null, data = null):
-	if can_log_with_level(log_level):
+	if can_log_with_level(log_level) and is_enabled():
 		for logger in _loggers:
 			var log_result = logger.log(_name, log_level, value, data_name, data)
 
