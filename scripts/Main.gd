@@ -36,7 +36,8 @@ func _init():
 	Services.Log.get(node_test).set_level("debug")
 	Services.Log.get(node_test).debug("log test debug")
 
-	Services.Log.register_logger("default", "Test")
+	# test auto creating loggers
+	# Services.Log.register_logger("default", "Test")
 	Services.Log.Test.debug("log test debug")
 
 	# event service
