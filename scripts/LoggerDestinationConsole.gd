@@ -49,7 +49,7 @@ func setup_default_text_blocks():
 	register_text_block(LoggerTextBlock.new().init("name", 20))
 	register_text_block(LoggerTextBlock.new().init("level", 10))
 	register_text_block(LoggerTextBlock.new().init("value", 40))
-	register_text_block(LoggerTextBlock.new().init("data"))
+	register_text_block(LoggerTextBlock.new().init("data", 10))
 
 # write to console using LoggerTextBlocks rendering
 func write_rendered():
