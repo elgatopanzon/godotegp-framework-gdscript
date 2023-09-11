@@ -21,6 +21,9 @@ func init():
 func _to_string():
 	return "Event"
 
+func as_dict():
+	return {}
+
 # used by ObjectPool
 func prepare():
 	pass

@@ -1,36 +1,39 @@
 ######################################################################
 # @author      : ElGatoPanzon
-# @class       : EventBasic
-# @created     : Sunday Sep 10, 2023 19:34:46 CST
+# @class       : EventSubscription
+# @created     : Sunday Sep 10, 2023 23:03:31 CST
 # @copyright   : Copyright (c) ElGatoPanzon 2023
 #
-# @description : Basic event accepting Owner and Data
+# @description : Holds information about a subscription to an Event
 ######################################################################
 
-class_name EventBasic
-extends Event
+class_name EventSubscription
+extends Resource
 
-# event data
-var _owner
-var _data
+var _subscriber: Object
+var _event_type
+var _event_filters: Array
 
 # object constructor
-func _init(owner: Object, data):
-	_owner = owner
-	_data = data
+func _init(subscriber: Object, event_type, event_filters: Array = []):
+	_subscriber = subscriber
+	_event_type = event_type
+	_event_filters = event_filters
 
-func init():
-	return self
-
+# friendly name when printing object
 func _to_string():
-	return "EventBasic"
+	return "EventSubscription"
 
 func as_dict():
 	return {
-		"single_consume": _single_consume,
-		"owner": _owner,
-		"data": _data,
+		"subscriber": _subscriber.to_string(),
+		"event_type": _event_type.get_path().get_file().replace(".gd", ""),
+		"event_filters": _event_filters
 	}
+
+# integration with Services.Log
+func logger():
+	return Services.Log.get(self.to_string())
 
 # used by ObjectPool
 func prepare():

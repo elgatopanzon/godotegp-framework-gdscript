@@ -12,6 +12,8 @@ extends ServiceManagerService
 
 var _event_queues: Dictionary
 
+var _subscribers: Array[EventSubscription]
+
 # object constructor
 func _init():
 	# register builtin event queues
@@ -94,28 +96,42 @@ func get_deferred_queue():
 func get_fetch_queue():
 	return get_queue("fetch")
 
+
 # allow object to subscribe Events emitted by emit() and emit_now()
-func subscribe(subscriber: Object, subscribe_event_class: Event, filter_objects: Array[EventFilter] = []):
-	pass
+func subscribe(subscription: EventSubscription):
+	logger().debug("Registering EventSubscription", "subscription", subscription.as_dict())
+
+	_subscribers.append(subscription)
+
 
 # emit an event to the deferred queue, to be processed in _process()
 func emit(event: Event):
+	logger().debug("Event emit(%s)" % event, "event", event.as_dict())
+
 	get_deferred_queue().queue(event, false)
 
 # emit an event to the instant broadcast queue
 func emit_now(event: Event):
+	logger().debug("Event emit_now(%s)" % event, "event", event.as_dict())
+
 	get_instant_queue().queue(event, false)
 
 # emit an event to the deferred queue, but only consumed once
 func emit_once(event: Event):
+	logger().debug("Event emit_once(%s)" % event, "event", event.as_dict())
+	
 	get_instant_queue().queue(event, true)
 
 # emit an event to the instant broadcast queue, but only consumed once
 func emit_now_once(event: Event):
+	logger().debug("Event emit_now_once(%s)" % event, "event", event.as_dict())
+
 	get_instant_queue().queue(event, true)
 
 # emit an event to the wait queue, to be fetched later
 func emit_wait(event: Event):
+	logger().debug("Event emit_wait(%s)" % event, "event", event.as_dict())
+
 	get_fetch_queue().queue(event, true)
 
 

@@ -63,6 +63,10 @@ func _init():
 	fetched = Services.Events.fetch(EventTest) # fetch again all waiting EventBasic events
 	Services.Log.Test.debug("fetch 1 (but it should match EventTest)", "fetched", fetched)
 
+	# subscribe and broadcast test
+	Services.Events.subscribe(EventSubscription.new(self, EventTest))
+	Services.Events.emit(EventTest.new(self))
+	Services.Events.emit_now(EventTest.new(self))
 
 # scene lifecycle methods
 # called when node enters the tree
