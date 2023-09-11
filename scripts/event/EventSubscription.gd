@@ -11,14 +11,18 @@ class_name EventSubscription
 extends Resource
 
 var _subscriber: Object
+var _subscriber_callable: Callable
 var _event_type
 var _event_filters: Array
 
 # object constructor
-func _init(subscriber: Object, event_type = Event, event_filters: Array = []):
+func _init(subscriber: Object, event_type = Event, event_filters: Array = [], subscriber_callable = null):
 	_subscriber = subscriber
 	_event_type = event_type
 	_event_filters = event_filters
+
+	if _subscriber_callable:
+		_subscriber_callable = subscriber_callable
 
 # friendly name when printing object
 func _to_string():
@@ -27,6 +31,7 @@ func _to_string():
 func as_dict():
 	return {
 		"subscriber": _subscriber.to_string(),
+		"subscriber_callable": _subscriber_callable,
 		"event_type": _event_type.get_path().get_file().replace(".gd", ""),
 		"event_filters": _event_filters
 	}
@@ -40,6 +45,14 @@ func prepare():
 	pass
 func reinit():
 	pass
+
+func get_subscriber_callable():
+	return _subscriber_callable
+func set_subscriber_callable(callable: Callable):
+	_subscriber_callable = callable
+
+func add_event_filter(event_filter: EventFilter):
+	_event_filters.append(event_filter)
 
 func get_subscriber():
 	return _subscriber

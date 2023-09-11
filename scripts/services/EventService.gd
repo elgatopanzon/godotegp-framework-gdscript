@@ -109,6 +109,30 @@ func subscribe(subscription: EventSubscription):
 
 	_subscriptions.append(subscription)
 
+func subscribe_signal(connect_object: Object, signal_name: String, subscription: EventSubscription):
+	logger().debug("Registering signal EventSubscription", "subscription", subscription.as_dict())
+	logger().debug("...", "object", connect_object)
+	logger().debug("...", "signal", signal_name)
+
+	# connect to the object with the given signal
+	connect_object.connect(signal_name, Callable(self, "_on_signal").bind({"object": connect_object, "name": signal_name, "subscription": subscription}))
+
+	# add the subscription to the system
+	# add filter for EventSignal events
+	subscription.add_event_filter(EventFilterType.new(EventSignal))
+	subscription.add_event_filter(EventFilterCustom.new(Callable(func(event): return event._signal_name == signal_name)))
+
+	# add custom Callable to pass event to
+	subscription.set_subscriber_callable(Callable(subscription.get_subscriber(), "_on_EventSignal_%s" % [signal_name]))
+
+	# register the subscription
+	subscribe(subscription)
+
+func _on_signal(signal_data: Dictionary, signal_param = null):
+	logger().debug("Signal received from node", "signal_data", signal_data)
+	logger().debug("...", "signal_param", signal_param)
+
+	emit_now(EventSignal.new(signal_data.object, signal_data.name, signal_param))
 
 # emit an event to the deferred queue, to be processed in _process()
 func emit(event: Event, queue_name = "deferred"):

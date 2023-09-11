@@ -155,11 +155,22 @@ func broadcast_event(event: Event, subscription: EventSubscription):
 	var event_type = event.to_string()
 	logger().debug("Broadcasting %s to subscriber" % event_type, "event", event.as_dict())
 	logger().debug("...", "subscription", subscription.as_dict())
-	
-	var method_string = "_on_%s" % [event_type]
 
-	if subscription.get_subscriber().has_method(method_string):
-		var callable = Callable(subscription.get_subscriber(), method_string)
-		callable.call(event)
-	else:
-		logger().error("Subscriber has no method %s" % [method_string], "subscriber", subscription.get_subscriber())
+	var callables = []
+
+	# create callable based on event name
+	var method_string = "_on_%s" % [event_type]
+	var callable = Callable(subscription.get_subscriber(), method_string)
+	callables.append(callable)
+
+	# add custom callable if exists
+	var subscriber_callable = subscription.get_subscriber_callable()
+	if subscriber_callable:
+		callables.append(subscriber_callable)
+
+	# call all callables
+	for c in callables:
+		if subscription.get_subscriber().has_method(c.get_method()):
+			c.call(event)
+		else:
+			logger().warning("Subscriber has no method %s" % [c.get_method()], "subscriber", subscription.get_subscriber())
