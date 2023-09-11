@@ -57,8 +57,8 @@ func _init():
 
 	var fetched = Services.Events.fetch([EventFilterType.new(EventBasic)]) # fetch all waiting EventBasic events
 	Services.Log.Test.debug("fetch 1", "fetched", fetched)
-	fetched = Services.Events.fetch([EventFilterType.new(EventBasic)]) # fetch again all waiting EventBasic events
-	Services.Log.Test.debug("fetch 1 (again)", "fetched", fetched)
+	fetched = Services.Events.fetch_all([EventFilterType.new(EventBasic)]) # fetch again all waiting EventBasic events
+	Services.Log.Test.debug("fetch all", "fetched", fetched)
 
 	fetched = Services.Events.fetch([EventFilterType.new(EventTest)]) # fetch again all waiting EventBasic events
 	Services.Log.Test.debug("fetch 1 (but it should match EventTest)", "fetched", fetched)

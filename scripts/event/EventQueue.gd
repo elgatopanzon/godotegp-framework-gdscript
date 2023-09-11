@@ -72,21 +72,31 @@ func queue(event: Event, single_consume: bool = false):
 	event.set_single_consume(single_consume)
 	_events.append(event)
 
-# return a single event from the queue
+# return events from the queue
 func fetch(event_filters: Array = [], count: int = 1):
 	# matching events
-	var matches = []
+	var matches: Array[Event] = []
+	var non_matches: Array[Event] = []
 
-	for event_idx in _events.size():
-		var event_matches = event_matches_filters(_events[event_idx], event_filters)
+	while (matches.size() < count and count > 0) or count == 0:
+		# take an event off the stack
+		var event = _events.pop_front()
 
+		# if there's none
+		if not event:
+			break
+
+		var event_matches = event_matches_filters(event, event_filters)
+
+		# return the event if it doesn't match
 		if not event_matches:
+			non_matches.push_back(event)
 			continue
 
-		matches.append(_events.pop_at(event_idx))
+		matches.append(event)
 
-		if matches.size() >= count and count > 0:
-			break
+	# return non_matched events to queue
+	_events = non_matches + _events
 
 	return matches
 
