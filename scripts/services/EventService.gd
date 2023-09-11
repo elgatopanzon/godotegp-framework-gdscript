@@ -17,9 +17,9 @@ var _subscriptions: Array[EventSubscription]
 # object constructor
 func _init():
 	# register builtin event queues
-	register_queue("instant", EventQueue.new())
-	register_queue("deferred", EventQueue.new())
-	register_queue("fetch", EventQueue.new())
+	register_queue(EventQueue.new("instant", false))
+	register_queue(EventQueue.new("deferred", true))
+	register_queue(EventQueue.new("fetch", false))
 
 func init():
 	return self
@@ -61,19 +61,23 @@ func reinit():
 # called during main loop processing
 func _process(delta: float):
 	for event_queue in _event_queues:
-		if event_queue not in ['fetch', 'instant']:
-			process_queue(_event_queues[event_queue])
+		var queue = _event_queues[event_queue]
+
+		# only process queues which have deferred processing enabled
+		if queue.is_deffered():
+			process_queue(queue)
 
 # called during physics processing
 # func _physics_process(delta: float):
 #	pass
 
 # register an event queue
-func register_queue(queue_name, event_queue: EventQueue):
+func register_queue(event_queue: EventQueue):
+	var queue_name = event_queue.get_queue_name()
+
 	if not _event_queues.get(queue_name, null):
 		logger().debug("Registering event queue", "event_queue", queue_name)
 
-		event_queue.set_queue_name(queue_name)
 		_event_queues[queue_name] = event_queue
 
 		return true

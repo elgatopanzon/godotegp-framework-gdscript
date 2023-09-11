@@ -11,17 +11,23 @@ class_name EventQueue
 extends Node
 
 var _name
+var _is_deffered: bool = false
 
 var _events: Array[Event]
 
 # object constructor
-func _init(name = "unnamed"):
+func _init(name = "unnamed", is_deffered: bool = false):
 	set_queue_name(name)
+
+	_is_deffered = is_deffered
 
 func set_queue_name(name):
 	_name = name
 func get_queue_name():
 	return _name
+
+func is_deffered():
+	return _is_deffered
 
 func init():
 	return self
