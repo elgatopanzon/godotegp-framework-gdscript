@@ -60,7 +60,9 @@ func reinit():
 # process methods
 # called during main loop processing
 func _process(delta: float):
-	process_queue(get_deferred_queue())
+	for event_queue in _event_queues:
+		if event_queue not in ['fetch', 'instant']:
+			process_queue(_event_queues[event_queue])
 
 # called during physics processing
 # func _physics_process(delta: float):
