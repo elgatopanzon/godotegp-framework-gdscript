@@ -1,20 +1,31 @@
 ######################################################################
 # @author      : ElGatoPanzon
-# @class       : EventFilter
-# @created     : Sunday Sep 10, 2023 17:39:45 CST
+# @class       : EventFilterType
+# @created     : Sunday Sep 10, 2023 21:59:12 CST
 # @copyright   : Copyright (c) ElGatoPanzon 2023
 #
-# @description : Base class for EventFilter objects
+# @description : Filter events by Event name
 ######################################################################
 
-class_name EventFilter
-extends Node
+class_name EventFilterType
+extends EventFilter
+
+var _event_type
+
+# object constructor
+func _init(event_type):
+	_event_type = event_type
 
 func init():
 	return self
 
+# friendly name when printing object
 func _to_string():
-	return "EventFilter"
+	return "EventFilterType"
+
+# integration with Services.Log
+func logger():
+	return Services.Log.get(self.to_string())
 
 # used by ObjectPool
 func prepare():
@@ -52,4 +63,8 @@ func reinit():
 #	pass
 
 func match(event: Event):
-	return true # dummy filter always matches
+	var match_result = is_instance_of(event, _event_type)
+
+	logger().debug("match result: type=%s, match_result=%s" % [_event_type.get_path().get_file().replace(".gd", ""), match_result], "event", event)
+
+	return match_result

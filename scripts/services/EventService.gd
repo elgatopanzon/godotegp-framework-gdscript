@@ -120,9 +120,9 @@ func emit_wait(event: Event):
 
 
 # fetch all (and remove) events from wait queue matching event type
-func fetch_all():
-	return get_fetch_queue().fetch_all()
+func fetch_all(event_filters: Array = []):
+	return fetch(event_filters, 0)
 
 # fetch X (and remove) events from wait queue matching event type
-func fetch(count: int = 1):
-	return get_fetch_queue().fetch(count)
+func fetch(event_filters: Array = [], count: int = 1):
+	return get_fetch_queue().fetch(event_filters, count)

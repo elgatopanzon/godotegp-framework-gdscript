@@ -1,20 +1,31 @@
 ######################################################################
 # @author      : ElGatoPanzon
-# @class       : EventFilter
-# @created     : Sunday Sep 10, 2023 17:39:45 CST
+# @class       : EventTest
+# @created     : Sunday Sep 10, 2023 22:19:11 CST
 # @copyright   : Copyright (c) ElGatoPanzon 2023
 #
-# @description : Base class for EventFilter objects
+# @description : Test event which isn't type EventBasic
 ######################################################################
 
-class_name EventFilter
-extends Node
+class_name EventTest
+extends Event
+
+var _owner
+
+# object constructor
+func _init(owner):
+	_owner = owner
 
 func init():
 	return self
 
+# friendly name when printing object
 func _to_string():
-	return "EventFilter"
+	return "EventTest"
+
+# integration with Services.Log
+func logger():
+	return Services.Log.get(self.to_string())
 
 # used by ObjectPool
 func prepare():
@@ -51,5 +62,3 @@ func reinit():
 # func _physics_process(delta: float):
 #	pass
 
-func match(event: Event):
-	return true # dummy filter always matches

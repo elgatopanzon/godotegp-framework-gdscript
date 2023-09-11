@@ -73,17 +73,30 @@ func queue(event: Event, single_consume: bool = false):
 	_events.append(event)
 
 # return a single event from the queue
-func fetch(count: int = 1):
+func fetch(event_filters: Array = [], count: int = 1):
+	# matching events
 	var matches = []
 
-	for event in _events:
-		matches.append(_events.pop_front())
+	for event_idx in _events.size():
+		var event_matches = event_matches_filters(_events[event_idx], event_filters)
+
+		if not event_matches:
+			continue
+
+		matches.append(_events.pop_at(event_idx))
 
 		if matches.size() >= count and count > 0:
 			break
 
 	return matches
 
-# return the whole queue
-func fetch_all():
-	return fetch(0)
+# check if an event matches filters
+func event_matches_filters(event: Event, event_filters: Array = []):
+	var matches = true
+
+	for filter in event_filters:
+		if not filter.match(event):
+			matches = false
+			break
+
+	return matches

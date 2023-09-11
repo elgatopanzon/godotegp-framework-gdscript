@@ -53,11 +53,15 @@ func _init():
 	# event fetch test
 	Services.Events.emit_wait(EventBasic.new(self, "fetch test 1"))
 	Services.Events.emit_wait(EventBasic.new(self, "fetch test 2"))
+	Services.Events.emit_wait(EventTest.new(self))
 
-	var fetched = Services.Events.fetch(EventBasic) # fetch all waiting EventBasic events
+	var fetched = Services.Events.fetch([EventFilterType.new(EventBasic)]) # fetch all waiting EventBasic events
 	Services.Log.Test.debug("fetch 1", "fetched", fetched)
-	fetched = Services.Events.fetch(EventBasic) # fetch again all waiting EventBasic events
+	fetched = Services.Events.fetch([EventFilterType.new(EventBasic)]) # fetch again all waiting EventBasic events
 	Services.Log.Test.debug("fetch 1 (again)", "fetched", fetched)
+
+	fetched = Services.Events.fetch([EventFilterType.new(EventTest)]) # fetch again all waiting EventBasic events
+	Services.Log.Test.debug("fetch 1 (but it should match EventTest)", "fetched", fetched)
 
 
 # scene lifecycle methods
