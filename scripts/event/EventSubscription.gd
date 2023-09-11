@@ -21,7 +21,7 @@ func _init(subscriber: Object, event_type = Event, event_filters: Array = [], su
 	_event_type = event_type
 	_event_filters = event_filters
 
-	if _subscriber_callable:
+	if subscriber_callable:
 		_subscriber_callable = subscriber_callable
 
 # friendly name when printing object
