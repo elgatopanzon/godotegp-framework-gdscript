@@ -23,7 +23,7 @@ func init():
 	return self
 
 func _to_string():
-	return "%s[%s]" % [self.to_string(), as_dict()]
+	return "%s[%s]" % ["EventBasic", as_dict()]
 
 func as_dict():
 	return {

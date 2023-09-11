@@ -21,9 +21,6 @@ func init():
 func _to_string():
 	return "Event"
 
-func to_string():
-	return "dummy event"
-
 # used by ObjectPool
 func prepare():
 	pass

@@ -117,3 +117,12 @@ func emit_now_once(event: Event):
 # emit an event to the wait queue, to be fetched later
 func emit_wait(event: Event):
 	get_fetch_queue().queue(event, true)
+
+
+# fetch all (and remove) events from wait queue matching event type
+func fetch_all():
+	return get_fetch_queue().fetch_all()
+
+# fetch X (and remove) events from wait queue matching event type
+func fetch(count: int = 1):
+	return get_fetch_queue().fetch(count)

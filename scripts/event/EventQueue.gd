@@ -71,3 +71,19 @@ func queue(event: Event, single_consume: bool = false):
 
 	event.set_single_consume(single_consume)
 	_events.append(event)
+
+# return a single event from the queue
+func fetch(count: int = 1):
+	var matches = []
+
+	for event in _events:
+		matches.append(_events.pop_front())
+
+		if matches.size() >= count and count > 0:
+			break
+
+	return matches
+
+# return the whole queue
+func fetch_all():
+	return fetch(0)

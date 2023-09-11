@@ -50,6 +50,15 @@ func _init():
 	Services.Events.emit_now_once(EventBasic.new(self, "was emitted using emit_now_once()"))
 	Services.Events.emit_wait(EventBasic.new(self, "was emitted using emit_wait()"))
 
+	# event fetch test
+	Services.Events.emit_wait(EventBasic.new(self, "fetch test 1"))
+	Services.Events.emit_wait(EventBasic.new(self, "fetch test 2"))
+
+	var fetched = Services.Events.fetch(EventBasic) # fetch all waiting EventBasic events
+	Services.Log.Test.debug("fetch 1", "fetched", fetched)
+	fetched = Services.Events.fetch(EventBasic) # fetch again all waiting EventBasic events
+	Services.Log.Test.debug("fetch 1 (again)", "fetched", fetched)
+
 
 # scene lifecycle methods
 # called when node enters the tree
