@@ -11,12 +11,13 @@ class_name LoggerTextProcessorColor
 extends LoggerTextProcessor
 
 var _color: String = "white"
+var _multiline_drop_color: bool = true
 
 # object constructor
 func _init():
 	pass
 
-func set_color(color: String):
+func set_color(color: String, multiline_drop_color: bool = true):
 	_color = color
 
 	return self
@@ -51,7 +52,7 @@ func set_color(color: String):
 #	pass
 
 func get_color():
-	if self._logger_line_current > 1:
+	if self._logger_line_current > 1 and not _multiline_drop_color:
 		return "black"
 	else:
 		return _color

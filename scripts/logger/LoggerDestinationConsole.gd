@@ -63,7 +63,7 @@ func setup_default_text_blocks():
 	register_text_block(LoggerTextBlock.new().init("name", 25, [
 		LoggerTextProcessorName.new().init(self),
 		LoggerTextProcessorPad.new().init(self).set_pad(25),
-		LoggerTextProcessorColor.new().init(self).set_color("white"),
+		LoggerTextProcessorColor.new().init(self).set_color("orange", false),
 		processor_line_from_level,
 		]))
 
@@ -76,7 +76,7 @@ func setup_default_text_blocks():
 
 	register_text_block(LoggerTextBlock.new().init("value", 40, [
 		LoggerTextProcessorPad.new().init(self).set_pad(40),
-		LoggerTextProcessorColor.new().init(self).set_color("white"),
+		LoggerTextProcessorColor.new().init(self).set_color("white", false),
 		processor_line_from_level,
 		]))
 	register_text_block(LoggerTextBlock.new().init("data", 0, [
