@@ -64,6 +64,7 @@ func _init():
 	Services.Log.Test.debug("fetch 1 (but it should match EventTest)", "fetched", fetched)
 
 	# subscribe and broadcast test
+	Services.Events.subscribe(EventSubscription.new(self))
 	Services.Events.subscribe(EventSubscription.new(self, EventTest))
 	Services.Events.emit(EventTest.new(self))
 	Services.Events.emit_now(EventTest.new(self))

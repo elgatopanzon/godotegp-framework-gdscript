@@ -15,7 +15,7 @@ var _event_type
 var _event_filters: Array
 
 # object constructor
-func _init(subscriber: Object, event_type, event_filters: Array = []):
+func _init(subscriber: Object, event_type = Event, event_filters: Array = []):
 	_subscriber = subscriber
 	_event_type = event_type
 	_event_filters = event_filters
