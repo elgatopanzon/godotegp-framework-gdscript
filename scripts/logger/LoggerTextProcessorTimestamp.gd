@@ -61,5 +61,5 @@ func get_engine_ticks():
 	var tick = Time.get_ticks_msec()
 	var ms = str(tick)
 	ms.erase(ms.length() - 1, 1)
-	var timestamp = str(tick/3600000)+":"+str(tick/60000).pad_zeros(2)+":"+str(tick/1000).pad_zeros(2)+"."+ms
+	var timestamp = str(tick/3600000).pad_zeros(2)+":"+str(tick/60000).pad_zeros(3)+":"+str(tick/1000).pad_zeros(4)+"."+ms.pad_zeros(8)
 	return timestamp
