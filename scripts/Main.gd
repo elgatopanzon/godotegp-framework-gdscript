@@ -43,6 +43,13 @@ func _init():
 	# event service
 	Services.register_service(EventService.new(), "Events")
 
+	# test event
+	Services.Events.emit(EventBasic.new(self, "was emitted using emit()"))
+	Services.Events.emit_now(EventBasic.new(self, "was emitted using emit_now()"))
+	Services.Events.emit_once(EventBasic.new(self, "was emitted using emit_once()"))
+	Services.Events.emit_now_once(EventBasic.new(self, "was emitted using emit_now_once()"))
+	Services.Events.emit_wait(EventBasic.new(self, "was emitted using emit_wait()"))
+
 
 # scene lifecycle methods
 # called when node enters the tree
