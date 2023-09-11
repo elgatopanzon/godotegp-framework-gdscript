@@ -45,6 +45,8 @@ func _init():
 func register_service(service: ServiceManagerService, service_name: String):
 	_services[service_name] = service
 
+	add_child(service)
+
 	# call on_registered handler
 	service.on_registered()
 
