@@ -107,38 +107,38 @@ func subscribe(subscription: EventSubscription):
 
 
 # emit an event to the deferred queue, to be processed in _process()
-func emit(event: Event):
+func emit(event: Event, queue_name = "deferred"):
 	logger().debug("Event emit(%s)" % event, "event", event.as_dict())
 
-	get_deferred_queue().queue(event, false)
+	get_queue(queue_name).queue(event, false)
 
 # emit an event to the instant broadcast queue
-func emit_now(event: Event):
+func emit_now(event: Event, queue_name = "instant"):
 	logger().debug("Event emit_now(%s)" % event, "event", event.as_dict())
 
-	get_instant_queue().queue(event, false)
+	get_queue(queue_name).queue(event, false)
 
 	process_queue(get_instant_queue())
 
 # emit an event to the deferred queue, but only consumed once
-func emit_once(event: Event):
+func emit_once(event: Event, queue_name = "deferred"):
 	logger().debug("Event emit_once(%s)" % event, "event", event.as_dict())
 	
-	get_instant_queue().queue(event, true)
+	get_queue(queue_name).queue(event, true)
 
 # emit an event to the instant broadcast queue, but only consumed once
-func emit_now_once(event: Event):
+func emit_now_once(event: Event, queue_name = "instant"):
 	logger().debug("Event emit_now_once(%s)" % event, "event", event.as_dict())
 
-	get_instant_queue().queue(event, true)
+	get_queue(queue_name).queue(event, true)
 
 	process_queue(get_instant_queue())
 
 # emit an event to the wait queue, to be fetched later
-func emit_wait(event: Event):
+func emit_wait(event: Event, queue_name = "fetch"):
 	logger().debug("Event emit_wait(%s)" % event, "event", event.as_dict())
 
-	get_fetch_queue().queue(event, true)
+	get_queue(queue_name).queue(event, true)
 
 
 # process an event queue and dispatch events to subscribers
