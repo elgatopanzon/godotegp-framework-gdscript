@@ -154,7 +154,7 @@ func get_line_text():
 			value_lines[value_line_line_count+1] = []
 			value_lines[value_line_line_count+1].append(current_line_word)
 			value_line_line_count += 1
-			value_line_word_count += 1
+			# value_line_word_count += 1
 			value_line_char_count = 0
 
 			continue
