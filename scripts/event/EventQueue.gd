@@ -73,10 +73,13 @@ func queue(event: Event, single_consume: bool = false):
 	_events.append(event)
 
 # return events from the queue
-func fetch(event_filters: Array = [], count: int = 1):
+func fetch(event_type = Event, event_filters: Array = [], count: int = 1):
 	# matching events
 	var matches: Array[Event] = []
 	var non_matches: Array[Event] = []
+
+	# create EventFilterType filter
+	event_filters.push_front(EventFilterType.new(event_type))
 
 	while (matches.size() < count and count > 0) or count == 0:
 		# take an event off the stack
