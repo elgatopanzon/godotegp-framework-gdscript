@@ -109,6 +109,21 @@ func subscribe(subscription: EventSubscription):
 
 	_subscriptions.append(subscription)
 
+# allow unsubscribing from events
+func unsubscribe(subscriber: Object, event_type = Event):
+	var unsubscribes = []
+
+	for subscription in _subscriptions:
+		if subscription.get_subscriber() == subscriber and (subscription.get_event_type() == event_type or event_type == Event):
+			logger().debug("Unsubscribing from events", "unsubscription", {"subscriber": subscription.as_dict()['subscriber'], "event_type": subscription.as_dict()['event_type']})
+
+			unsubscribes.append(subscription)
+
+	# remove any matching subscriptions
+	for unsubscribe in unsubscribes:
+		_subscriptions.erase(unsubscribe)
+
+
 func subscribe_signal(connect_object: Object, signal_name: String, subscription: EventSubscription):
 	logger().debug("Registering signal EventSubscription", "subscription", subscription.as_dict())
 	logger().debug("...", "object", connect_object)

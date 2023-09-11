@@ -71,6 +71,17 @@ func _init():
 	Services.Events.emit_now_once(EventTest.new(self))
 	Services.Events.emit(EventTest.new(self)) # deferred test
 
+	# custom event queue
+	Services.Events.register_queue(EventQueue.new("custom", 2)) # 2 = deferred
+	Services.Events.subscribe(EventSubscription.new(self, EventTest))
+
+	Services.Events.custom.queue(EventTest.new(self))
+
+	# unsubscribe test
+	Services.Events.unsubscribe(self) # unsubscribe all subscriptions for self
+	Services.Events.emit_now(EventTest.new(self)) # shouldn't go to anyone
+
+
 # scene lifecycle methods
 # called when node enters the tree
 # func _enter_tree():

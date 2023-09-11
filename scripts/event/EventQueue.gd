@@ -106,6 +106,9 @@ func fetch(event_type = Event, event_filters: Array = [], count: int = 1):
 			non_matches.push_back(event)
 			continue
 
+		event.set_consumed(true)
+		logger().debug("Event processed from queue", "event", {"event": event.as_dict(), "consumed": event.get_consumed()})
+
 		matches.append(event)
 
 	# return non_matched events to queue
@@ -149,6 +152,9 @@ func process_queue(subscriptions: Array[EventSubscription] = []):
 				event.set_consumed(true)
 
 				broadcast_event(event, subscription)
+
+		logger().debug("Event processed from queue", "event", {"event": event.as_dict(), "consumed": event.get_consumed()})
+		
 
 # broadcast an event to an EventSubscription
 func broadcast_event(event: Event, subscription: EventSubscription):
