@@ -136,7 +136,7 @@ func subscribe_signal(connect_object: Object, signal_name: String, subscription:
 	# add filter for EventSignal events
 	subscription.add_event_filter(EventFilterType.new(EventSignal))
 	subscription.add_event_filter(EventFilterCustom.new(Callable(func(event): return event._signal_name == signal_name)))
-	subscription.add_event_filter(EventFilterCustom.new(Callable(func(event): return event._owner == connect_object)))
+	subscription.add_event_filter(EventFilterObject.new(connect_object))
 
 	# add custom Callable to pass event to
 	subscription.set_subscriber_callable(Callable(subscription.get_subscriber(), "_on_EventSignal_%s" % [signal_name]))
