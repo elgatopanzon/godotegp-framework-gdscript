@@ -40,6 +40,17 @@ func _init():
 	# Services.Log.register_logger("default", "Test")
 	Services.Log.Test.debug("log test debug")
 
+	Services.Log.Test.debug("order test 1")
+	Services.Log.Test.debug("order test 2")
+	Services.Log.Test.debug("order test 3")
+	Services.Log.Test.debug("order test 4")
+	Services.Log.Test.debug("order test 5")
+	Services.Log.Test.debug("order test 6")
+	Services.Log.Test.debug("order test 7")
+	Services.Log.Test.debug("order test 8")
+	Services.Log.Test.debug("order test 9")
+	Services.Log.Test.debug("order test 10")
+
 	# event service
 	Services.register_service(EventService.new(), "Events")
 
