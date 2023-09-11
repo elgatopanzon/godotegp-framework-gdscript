@@ -17,9 +17,9 @@ var _subscriptions: Array[EventSubscription]
 # object constructor
 func _init():
 	# register builtin event queues
-	register_queue(EventQueue.new("instant", false))
-	register_queue(EventQueue.new("deferred", true))
-	register_queue(EventQueue.new("fetch", false))
+	register_queue(EventQueue.new("instant", 1))
+	register_queue(EventQueue.new("deferred", 2))
+	register_queue(EventQueue.new("fetch", 0))
 
 func init():
 	return self
@@ -64,7 +64,7 @@ func _process(delta: float):
 		var queue = _event_queues[event_queue]
 
 		# only process queues which have deferred processing enabled
-		if queue.is_deffered():
+		if queue.get_process_type() == 2:
 			process_queue(queue)
 
 # called during physics processing
@@ -146,7 +146,7 @@ func emit_now(event: Event, queue_name = "instant"):
 
 	get_queue(queue_name).queue(event, false)
 
-	process_queue(get_instant_queue())
+	process_queue(get_queue(queue_name))
 
 # emit an event to the deferred queue, but only consumed once
 func emit_once(event: Event, queue_name = "deferred"):
@@ -160,7 +160,7 @@ func emit_now_once(event: Event, queue_name = "instant"):
 
 	get_queue(queue_name).queue(event, true)
 
-	process_queue(get_instant_queue())
+	process_queue(get_queue(queue_name))
 
 # emit an event to the wait queue, to be fetched later
 func emit_wait(event: Event, queue_name = "fetch"):
