@@ -17,8 +17,7 @@ func _init():
 func init():
 	return self
 
-# used by LoggerService
-func get_logger_name():
+func _to_string():
 	return "EventFilter"
 
 # used by ObjectPool

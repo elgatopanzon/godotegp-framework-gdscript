@@ -21,10 +21,10 @@ func _init(default_log_level: String = "debug"):
 
 	# create self LoggerCollection to allow us to log from here as early as possible
 	var lc = LoggerCollection.new()
-	lc.set_name(get_logger_name())
+	lc.set_name(self.to_string())
 	lc.set_level(_default_log_level) # set the log level to the default
 
-	_logger_collections[get_logger_name()] = lc 
+	_logger_collections[self.to_string()] = lc 
 
 	# setup default loggers
 	var logger_console = Logger.new()
@@ -37,12 +37,12 @@ func _init(default_log_level: String = "debug"):
 	# add logger as reusable collection
 	self.register_logger(logger_console, "default")
 
-	self.register_logger("default", get_logger_name())
+	self.register_logger("default", self.to_string())
 
 func logger():
-	return self.get(get_logger_name())
+	return self.get(self.to_string())
 
-func get_logger_name():
+func _to_string():
 	return "LoggerService"
 
 func set_default_log_level(level: String):

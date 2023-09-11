@@ -14,12 +14,12 @@ var object_pools: Dictionary
 
 # object constructor
 func _init():
-	Services.Log.register_logger("default", get_logger_name())
+	Services.Log.register_logger("default", self.to_string())
 
 func logger():
-	return Services.Log.get(get_logger_name())
+	return Services.Log.get(self.to_string())
 
-func get_logger_name():
+func _to_string():
 	return "ObjectPoolService"
 
 	pass

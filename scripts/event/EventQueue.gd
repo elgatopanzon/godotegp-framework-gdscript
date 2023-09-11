@@ -25,11 +25,11 @@ func init():
 	return self
 
 # used by LoggerService
-func get_logger_name():
+func _to_string():
 	return "EventQueue [%s]" % [_name]
 
 func logger():
-	return Services.Log.get(get_logger_name())
+	return Services.Log.get(self.to_string())
 
 # used by ObjectPool
 func prepare():

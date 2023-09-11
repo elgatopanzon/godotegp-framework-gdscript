@@ -22,12 +22,8 @@ func _init(owner: Object, data):
 func init():
 	return self
 
-# used by LoggerService
-func get_logger_name():
-	return "EventBasic"
-
 func _to_string():
-	return "%s[%s]" % [get_logger_name(), as_dict()]
+	return "%s[%s]" % [self.to_string(), as_dict()]
 
 func as_dict():
 	return {
