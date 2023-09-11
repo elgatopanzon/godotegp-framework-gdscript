@@ -20,6 +20,8 @@ func _init(name = "unnamed"):
 
 func set_queue_name(name):
 	_name = name
+func get_queue_name():
+	return _name
 
 func init():
 	return self
@@ -67,9 +69,11 @@ func reinit():
 #	pass
 
 func queue(event: Event, single_consume: bool = false):
-	logger().debug("Adding event to queue", "event", event)
-
 	event.set_single_consume(single_consume)
+
+	logger().debug("Adding event to queue", "event_type", event)
+	logger().debug("...", "event", event.as_dict())
+
 	_events.append(event)
 
 # return events from the queue
@@ -113,3 +117,43 @@ func event_matches_filters(event: Event, event_filters: Array = []):
 			break
 
 	return matches
+
+# process the queue with a list of EventSubscriptions
+func process_queue(subscriptions: Array[EventSubscription] = []):
+	if self._events.size() == 0:
+		return false
+
+	logger().debug("Processing event queue", "event_count", _events.size())
+
+	# fetch all events from queue, no filters
+	var events = fetch(Event, [], 0)
+
+	# loop over all events and look for matching subscriptions
+	for event in events:
+		for subscription in subscriptions:
+			if not event.is_valid():
+				logger().debug("Event is consumed, discarding", "event", event.as_dict())
+				continue
+
+			# include base type filter from event type
+			var event_filters = [EventFilterType.new(subscription.get_event_type())] + subscription.get_event_filters()
+
+			# if the event matches a subscriptions filter, ship it!
+			if event_matches_filters(event, event_filters):
+				event.set_consumed(true)
+
+				broadcast_event(event, subscription)
+
+# broadcast an event to an EventSubscription
+func broadcast_event(event: Event, subscription: EventSubscription):
+	var event_type = event.to_string()
+	logger().debug("Broadcasting %s to subscriber" % event_type, "event", event.as_dict())
+	logger().debug("...", "subscription", subscription.as_dict())
+	
+	var method_string = "_on_%s" % [event_type]
+
+	if subscription.get_subscriber().has_method(method_string):
+		var callable = Callable(subscription.get_subscriber(), method_string)
+		callable.call(event)
+	else:
+		logger().error("Subscriber has no method %s" % [method_string], "subscriber", subscription.get_subscriber())

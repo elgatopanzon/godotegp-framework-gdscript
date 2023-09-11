@@ -66,8 +66,10 @@ func _init():
 	# subscribe and broadcast test
 	Services.Events.subscribe(EventSubscription.new(self))
 	Services.Events.subscribe(EventSubscription.new(self, EventTest))
-	Services.Events.emit(EventTest.new(self))
+	Services.Events.emit_now(EventBasic.new(self, "sub test 1"))
 	Services.Events.emit_now(EventTest.new(self))
+	Services.Events.emit_now_once(EventTest.new(self))
+	Services.Events.emit(EventTest.new(self)) # deferred test
 
 # scene lifecycle methods
 # called when node enters the tree
@@ -94,3 +96,8 @@ func _init():
 
 func get_logger_name():
 	return "GodotEGP.Main"
+
+func _on_EventBasic(event: Event):
+	Services.Log.Test.debug("Received broadcasted EventBasic event", "event", event.as_dict())
+func _on_EventTest(event: Event):
+	Services.Log.Test.debug("Received broadcasted EventTest event", "event", event.as_dict())

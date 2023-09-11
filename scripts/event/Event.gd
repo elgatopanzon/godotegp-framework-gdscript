@@ -12,6 +12,7 @@ extends Resource
 
 # if true, the event will only be consumed once
 var _single_consume: bool = false
+var _consumed: bool = false
 
 # object constructor
 func init():
@@ -30,13 +31,23 @@ func prepare():
 func reinit():
 	pass
 
+func set_consumed(consumed: bool):
+	_consumed = consumed
+func get_consumed():
+	return _consumed
+func is_valid():
+	if _consumed == true and _single_consume == true:
+		return false
+
+	return true
+
+func set_single_consume(state: bool):
+	_single_consume = state
+func get_single_consume():
+	return _single_consume
+
 # object destructor
 # func _notification(what):
 #     if (what == NOTIFICATION_PREDELETE):
 #         pass
 
-func set_single_consume(state: bool):
-	_single_consume = state
-
-func get_single_consume():
-	return _single_consume

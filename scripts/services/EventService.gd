@@ -12,7 +12,7 @@ extends ServiceManagerService
 
 var _event_queues: Dictionary
 
-var _subscribers: Array[EventSubscription]
+var _subscriptions: Array[EventSubscription]
 
 # object constructor
 func _init():
@@ -59,8 +59,8 @@ func reinit():
 
 # process methods
 # called during main loop processing
-# func _process(delta: float):
-#	pass
+func _process(delta: float):
+	process_queue(get_deferred_queue())
 
 # called during physics processing
 # func _physics_process(delta: float):
@@ -101,7 +101,7 @@ func get_fetch_queue():
 func subscribe(subscription: EventSubscription):
 	logger().debug("Registering EventSubscription", "subscription", subscription.as_dict())
 
-	_subscribers.append(subscription)
+	_subscriptions.append(subscription)
 
 
 # emit an event to the deferred queue, to be processed in _process()
@@ -116,6 +116,8 @@ func emit_now(event: Event):
 
 	get_instant_queue().queue(event, false)
 
+	process_queue(get_instant_queue())
+
 # emit an event to the deferred queue, but only consumed once
 func emit_once(event: Event):
 	logger().debug("Event emit_once(%s)" % event, "event", event.as_dict())
@@ -128,12 +130,18 @@ func emit_now_once(event: Event):
 
 	get_instant_queue().queue(event, true)
 
+	process_queue(get_instant_queue())
+
 # emit an event to the wait queue, to be fetched later
 func emit_wait(event: Event):
 	logger().debug("Event emit_wait(%s)" % event, "event", event.as_dict())
 
 	get_fetch_queue().queue(event, true)
 
+
+# process an event queue and dispatch events to subscribers
+func process_queue(event_queue):
+	event_queue.process_queue(_subscriptions)
 
 # fetch all (and remove) events from wait queue matching event type
 func fetch_all(event_type = Event, event_filters: Array = []):

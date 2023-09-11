@@ -41,6 +41,13 @@ func prepare():
 func reinit():
 	pass
 
+func get_subscriber():
+	return _subscriber
+func get_event_type():
+	return _event_type
+func get_event_filters():
+	return _event_filters
+
 # object destructor
 # func _notification(what):
 #     if (what == NOTIFICATION_PREDELETE):
