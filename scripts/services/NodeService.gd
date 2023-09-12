@@ -8,7 +8,7 @@
 ######################################################################
 
 class_name NodeService
-extends ServiceManagerService
+extends Service
 
 var _nodes: Dictionary
 

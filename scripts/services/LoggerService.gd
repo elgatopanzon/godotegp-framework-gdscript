@@ -8,7 +8,7 @@
 ######################################################################
 
 class_name LoggerService
-extends ServiceManagerService
+extends Service
 
 # holds queue of logs to process (hacky)
 var _logger_event_queue: Array[EventLoggerLine]

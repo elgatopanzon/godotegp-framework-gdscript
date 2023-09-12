@@ -8,7 +8,7 @@
 ######################################################################
 
 class_name ObjectPoolService
-extends ServiceManagerService
+extends Service
 
 var object_pools: Dictionary
 

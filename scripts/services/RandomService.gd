@@ -8,7 +8,7 @@
 ######################################################################
 
 class_name RandomService
-extends ServiceManagerService
+extends Service
 
 var _rng_instances: Dictionary
 

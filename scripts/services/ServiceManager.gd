@@ -41,8 +41,8 @@ func _init():
 # 	pass
 
 
-# register a ServiceManagerService object
-func register_service(service: ServiceManagerService, service_name: String):
+# register a Service object
+func register_service(service: Service, service_name: String):
 	_services[service_name] = service
 
 	add_child(service)

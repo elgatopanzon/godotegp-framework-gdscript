@@ -8,7 +8,7 @@
 ######################################################################
 
 class_name SystemService
-extends ServiceManagerService
+extends Service
 
 var _system_objects: Dictionary
 

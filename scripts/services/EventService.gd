@@ -8,7 +8,7 @@
 ######################################################################
 
 class_name EventService
-extends ServiceManagerService
+extends Service
 
 var _event_queues: Dictionary
 
