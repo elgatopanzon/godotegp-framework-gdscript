@@ -23,6 +23,9 @@ func init():
 func _to_string():
 	return "EventFilterType"
 
+func get_broadcast_method_string():
+	return null
+
 # integration with Services.Log
 func logger():
 	return Services.Log.get(self.to_string())

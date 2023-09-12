@@ -23,6 +23,9 @@ func init():
 func _to_string():
 	return "EventFilterGroup"
 
+func get_broadcast_method_string():
+	return "group_"+_node_group
+
 # integration with Services.Log
 func logger():
 	return Services.Log.get(self.to_string())

@@ -164,8 +164,21 @@ func broadcast_event(event: Event, subscription: EventSubscription):
 
 	var callables = []
 
-	# create callable based on event name
-	var method_string = "_on_%s" % [event_type]
+	# create callable based on event and subscription filters
+	# var method_string = "_on_%s" % [event_type]
+
+	var method_string_parts = []
+
+	method_string_parts.append(event.get_broadcast_method_string())
+
+	for event_filter in subscription._event_filters:
+		var filter_method_string = event_filter.get_broadcast_method_string()
+		if filter_method_string:
+			method_string_parts.append(filter_method_string)
+
+	var method_string = "_on_%s" % ["__".join(method_string_parts)]
+	logger().debug("Method string for Callable", "method_string", method_string)
+
 	var callable = Callable(subscription.get_subscriber(), method_string)
 	callables.append(callable)
 

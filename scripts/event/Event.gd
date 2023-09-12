@@ -22,6 +22,9 @@ func init():
 func _to_string():
 	return "Event"
 
+func get_broadcast_method_string():
+	return _to_string()
+
 func as_dict():
 	return {}
 

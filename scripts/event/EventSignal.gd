@@ -35,6 +35,9 @@ func as_dict():
 func _to_string():
 	return "EventSignal"
 
+func get_broadcast_method_string():
+	return _to_string()+"_"+_signal_name
+
 # integration with Services.Log
 func logger():
 	return Services.Log.get(self.to_string())
