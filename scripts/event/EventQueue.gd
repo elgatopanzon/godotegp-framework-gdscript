@@ -124,6 +124,9 @@ func event_matches_filters(event: Event, event_filters: Array = []):
 		if not filter.match(event):
 			matches = false
 			break
+	
+	logger().debug("Event filter match result", "matches", matches)
+	logger().debug("...", "filters", event_filters)
 
 	return matches
 
@@ -182,7 +185,6 @@ func broadcast_event(event: Event, subscription: EventSubscription):
 			method_string_parts.append(filter_method_string)
 
 	var method_string = "_on_%s" % ["__".join(method_string_parts)]
-	logger().debug("Method string for Callable", "method_string", method_string)
 
 	var callable = Callable(subscription.get_subscriber(), method_string)
 
@@ -192,6 +194,7 @@ func broadcast_event(event: Event, subscription: EventSubscription):
 
 	# call all callables
 	for c in callables:
+		logger().debug("Method string for Callable", "method_string", c.get_method())
 		if subscription.get_subscriber().has_method(c.get_method()):
 			c.call(event)
 		else:

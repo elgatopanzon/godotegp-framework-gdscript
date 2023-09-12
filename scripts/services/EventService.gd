@@ -107,7 +107,11 @@ func get_fetch_queue():
 func subscribe(subscription: EventSubscription):
 	logger().debug("Registering EventSubscription", "subscription", subscription.as_dict())
 
-	_subscriptions.append(subscription)
+	if subscription not in _subscriptions:
+		_subscriptions.append(subscription)
+	else:
+		logger().debug("Subscription already registered", "subscription", subscription.as_dict())
+
 
 # allow unsubscribing from events
 func unsubscribe(subscriber: Object, event_type = Event):
@@ -125,12 +129,13 @@ func unsubscribe(subscriber: Object, event_type = Event):
 
 
 func subscribe_signal(connect_object: Object, signal_name: String, subscription: EventSubscription):
-	logger().debug("Registering signal EventSubscription", "subscription", subscription.as_dict())
-	logger().debug("...", "object", connect_object)
-	logger().debug("...", "signal", signal_name)
-
 	# connect to the object with the given signal
-	connect_object.connect(signal_name, Callable(self, "_on_signal").bind({"object": connect_object, "name": signal_name, "subscription": subscription}))
+	var signal_callable = Callable(self, "_on_signal").bind({"object": connect_object, "name": signal_name, "subscription": subscription})
+
+	if not connect_object.is_connected(signal_name, signal_callable):
+		connect_object.connect(signal_name, signal_callable)
+	else:
+		return false
 
 	# add the subscription to the system
 	# add filter for EventSignal events
@@ -139,7 +144,13 @@ func subscribe_signal(connect_object: Object, signal_name: String, subscription:
 	subscription.add_event_filter(EventFilterObject.new(connect_object))
 
 	# add custom Callable to pass event to
-	subscription.set_subscriber_callable(Callable(subscription.get_subscriber(), "_on_EventSignal_%s" % [signal_name]))
+	if not subscription._subscriber_callable:
+		subscription.set_subscriber_callable(Callable(subscription.get_subscriber(), "_on_EventSignal_%s" % [signal_name]))
+
+	logger().debug("Registering signal EventSubscription", "subscription", subscription.as_dict())
+	logger().debug("...", "object", connect_object)
+	logger().debug("...", "signal", signal_name)
+
 
 	# register the subscription
 	subscribe(subscription)

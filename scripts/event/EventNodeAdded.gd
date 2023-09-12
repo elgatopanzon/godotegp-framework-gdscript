@@ -28,6 +28,11 @@ func init():
 func _to_string():
 	return "EventNodeAdded"
 
+func as_dict():
+	return {
+		"node": _node
+	}
+
 # integration with Services.Log
 func logger():
 	return Services.Log.get(self.to_string())
