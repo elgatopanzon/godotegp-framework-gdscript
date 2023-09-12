@@ -16,7 +16,7 @@ var _signals_connected: bool = false
 
 # object constructor
 func _init():
-	Services.Events.register_queue(EventQueue.new("nodes", 2)) # register deferred queue
+	Services.Events.register_queue(EventQueue.new(self, 1)) # register instant queue
 
 func init():
 	return self
@@ -78,9 +78,9 @@ func _process(delta: float):
 
 # handle signals and forward to events for interested listeners
 func _on_node_added(node: Node):
-	Services.Events.nodes.queue(EventNodeAdded.new(self, node))
+	Services.Events.emit_now(EventNodeAdded.new(self, node), self)
 func _on_node_removed(node: Node):
-	Services.Events.nodes.queue(EventNodeRemoved.new(self, node))
+	Services.Events.emit_now(EventNodeRemoved.new(self, node), self)
 
 # receive events from above
 func _on_EventNodeAdded(event):
