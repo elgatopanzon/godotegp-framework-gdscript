@@ -19,11 +19,19 @@ var _levels = ["debug", "info", "warning", "error", "critical"]
 var _enabled: bool = true
 
 var _queue: Array[EventLoggerLine]
-var _queue_enabled: bool = false # enabling it prints logs out of order
+var _queue_enabled: bool = false
 
 # object constructor
 func _init(level: String = "debug"):
 	set_level(level)
+
+	# if Events service enabled enable queue
+	# if Services.get("Events"):
+	# 	# create the custom queue if it doesn't exist
+	# 	if not Services.Events.get_queue("logging"):
+	# 		Services.Events.register_queue(EventQueue.new("logging", 2))
+	#
+	# 	set_queue_enabled(true)
 
 func set_name(name):
 	_name = name
@@ -45,6 +53,12 @@ func set_enabled(state):
 
 func is_enabled():
 	return _enabled
+
+func queue_enabled():
+	return _queue_enabled
+
+func set_queue_enabled(state: bool):
+	_queue_enabled = state
 
 # object destructor
 # func _notification(what):
@@ -107,7 +121,7 @@ func log(log_level: String, value, data_name = null, data = null):
 		if not _queue_enabled:
 			log_to_loggers(log_level, value, data_name, data)
 		else:
-			_queue.append(EventLoggerLine.new(_name, log_level, value, data_name, data))
+			Services.Events.emit(EventLoggerLine.new(_name, log_level, value, data_name, data), "logging")
 
 func log_to_loggers(log_level, value, data_name, data):
 	for logger in _loggers:
@@ -116,10 +130,3 @@ func log_to_loggers(log_level, value, data_name, data):
 # check if we can log with a given log level
 func can_log_with_level(log_level: String):
 	return max(0, _levels.find(log_level, 0)) >= _levels.find(_level, 0)
-
-# process the logging queue
-func process_queue():
-	while _queue.size() > 0:
-		var log_event = _queue.pop_front()
-		if log_event:
-			log_to_loggers(log_event.get_level(), log_event.get_value(), log_event.get_data_name(), log_event.get_data_value())

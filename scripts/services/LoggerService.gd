@@ -69,8 +69,11 @@ func set_default_log_level(level: String):
 func _process(delta: float):
 	for lc_id in _logger_collections:
 		var lc = _logger_collections[lc_id]
-		if lc._queue_enabled:
-			lc.process_queue()
+
+		# # check if Events service is available and then enable queued logging
+		# if not lc.queue_enabled() and Services.Events:
+		# 	logger().debug("Enabling queue for collection", "collection", lc._name)
+		# 	lc.set_queue_enabled(true)
 
 # called during physics processing
 # func _physics_process(delta: float):
