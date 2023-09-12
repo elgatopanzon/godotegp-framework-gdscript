@@ -144,7 +144,13 @@ func subscribe_signal(connect_object: Object, signal_name: String, subscription:
 	# register the subscription
 	subscribe(subscription)
 
-func _on_signal(signal_data: Dictionary, signal_param = null):
+func _on_signal(signal_data = {}, signal_param = null):
+	# hack: if the signal has a param, switch the variables
+	if typeof(signal_data) != TYPE_DICTIONARY:
+		var temp = signal_data
+		signal_data = signal_param
+		signal_param = temp
+
 	logger().debug("Signal received from node", "signal_data", signal_data)
 	logger().debug("...", "signal_param", signal_param)
 
