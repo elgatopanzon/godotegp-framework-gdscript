@@ -164,6 +164,11 @@ func broadcast_event(event: Event, subscription: EventSubscription):
 
 	var callables = []
 
+	# add custom callable if exists
+	var subscriber_callable = subscription.get_subscriber_callable()
+	if subscriber_callable:
+		callables.append(subscriber_callable)
+
 	# create callable based on event and subscription filters
 	# var method_string = "_on_%s" % [event_type]
 
@@ -180,12 +185,10 @@ func broadcast_event(event: Event, subscription: EventSubscription):
 	logger().debug("Method string for Callable", "method_string", method_string)
 
 	var callable = Callable(subscription.get_subscriber(), method_string)
-	callables.append(callable)
 
-	# add custom callable if exists
-	var subscriber_callable = subscription.get_subscriber_callable()
-	if subscriber_callable:
-		callables.append(subscriber_callable)
+	# add automatic callable if no custom callable exists
+	if callables.size() == 0:
+		callables.append(callable)
 
 	# call all callables
 	for c in callables:
