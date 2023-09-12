@@ -136,9 +136,9 @@ func unregister_node(node_id, node):
 
 # get the friendly ID of a node
 func get_node_id(node):
-	# get ID from editor_description
-	if node.editor_description:
-		return node.editor_description
+	# get ID from meta
+	if node.has_meta("id"):
+		return node.get_meta("id")
 	else:
 		return node.get_name()
 

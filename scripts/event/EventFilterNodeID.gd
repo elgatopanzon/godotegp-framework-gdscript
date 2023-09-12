@@ -70,9 +70,8 @@ func match(event: Event):
 
 	# if it didn't match by name, try by ID
 	if not matched:
-		var node_meta_id = event._owner.editor_description
-
-		if node_meta_id and node_meta_id == _id:
-			matched = true
+		if event._owner.has_meta("id"):
+			if event._owner.get_meta("id") == _id:
+				matched = true
 
 	return matched
