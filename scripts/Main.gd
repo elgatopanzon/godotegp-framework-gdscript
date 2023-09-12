@@ -12,6 +12,7 @@ extends Node
 
 var _services: Dictionary = {
 	"Log": LoggerService, # init first so other services can use it
+	"System": SystemService,
 	"Events": EventService,
 	"Nodes": NodeService,
 	"ObjectPool": ObjectPoolService,
@@ -93,7 +94,6 @@ func _init():
 	# unsubscribe test
 	Services.Events.unsubscribe(self) # unsubscribe all subscriptions for self
 	Services.Events.emit_now(EventTest.new(self)) # shouldn't go to anyone
-
 
 # scene lifecycle methods
 # called when node enters the tree
