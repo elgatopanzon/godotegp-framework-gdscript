@@ -15,14 +15,16 @@ var _level: String
 var _value: String
 var _data_name
 var _data_value
+var _logger_collection: LoggerCollection
 
 # object constructor
-func _init(name, level: String, value: String, data_name, data_value):
+func _init(name, level: String, value: String, data_name, data_value, logger_collection: LoggerCollection):
 	_name = name
 	_level = level
 	_value = value
 	_data_name = data_name
 	_data_value = data_value
+	_logger_collection = logger_collection
 
 func get_name():
 	return _name
@@ -34,6 +36,8 @@ func get_data_name():
 	return _data_name
 func get_data_value():
 	return _data_value
+func get_logger_collection():
+	return _logger_collection
 
 func init():
 	return self

@@ -10,6 +10,10 @@
 class_name LoggerService
 extends ServiceManagerService
 
+# holds queue of logs to process (hacky)
+var _logger_event_queue: Array[EventLoggerLine]
+var _logger_event_queue_process_max = 1
+
 # hold the LoggerCollection instances
 var _logger_collections: Dictionary
 
@@ -67,13 +71,14 @@ func set_default_log_level(level: String):
 # process methods
 # called during main loop processing
 func _process(delta: float):
-	for lc_id in _logger_collections:
-		var lc = _logger_collections[lc_id]
+	# process the queue
+	var counter = 0
+	while _logger_event_queue.size() > 0 and counter < _logger_event_queue_process_max:
+		var event = _logger_event_queue.pop_front()
 
-		# # check if Events service is available and then enable queued logging
-		# if not lc.queue_enabled() and Services.Events:
-		# 	logger().debug("Enabling queue for collection", "collection", lc._name)
-		# 	lc.set_queue_enabled(true)
+		event.get_logger_collection().process_event(event)
+
+		counter += 1
 
 # called during physics processing
 # func _physics_process(delta: float):
@@ -134,3 +139,7 @@ func get(group_id):
 # handle accessing collections as params
 func _get(group_id):
 	return get_collection(group_id)
+
+# accept an EventLoggerLine object to queue
+func queue_logging_event(event: EventLoggerLine):
+	_logger_event_queue.append(event)
