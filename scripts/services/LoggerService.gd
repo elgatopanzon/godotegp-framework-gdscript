@@ -20,11 +20,7 @@ func _init(default_log_level: String = "debug"):
 	set_default_log_level(default_log_level)
 
 	# create self LoggerCollection to allow us to log from here as early as possible
-	var lc = LoggerCollection.new()
-	lc.set_name(self.to_string())
-	lc.set_level(_default_log_level) # set the log level to the default
-
-	_logger_collections[self.to_string()] = lc 
+	create_logger_collection(self.to_string(), _default_log_level)
 
 	# setup default loggers
 	var logger_console = Logger.new()
@@ -77,17 +73,24 @@ func set_default_log_level(level: String):
 # func _physics_process(delta: float):
 #	pass
 
+func create_logger_collection(group_id, level):
+	var lc = LoggerCollection.new()
+	lc.set_name(group_id)
+	lc.set_level(level) # set the log level to the default
+
+	_logger_collections[group_id] = lc 
+
+	add_child(lc)
+
+	return lc
+
 # register a Logger instance with group ID
 func register_logger(logger, group_id):
 	# init a LoggerCollection for this logger
 	if not _logger_collections.get(group_id, null):
 		logger().debug("Creating LoggerCollection for group", "group_id", group_id)
 
-		var lc = LoggerCollection.new()
-		lc.set_name(group_id)
-		lc.set_level(_default_log_level) # set the log level to the default
-
-		_logger_collections[group_id] = lc 
+		create_logger_collection(group_id, _default_log_level)
 
 	# add Logger instance to collection when it's a Logger
 	if is_instance_of(logger, Logger):
