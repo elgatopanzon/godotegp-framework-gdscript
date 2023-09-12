@@ -13,6 +13,7 @@ extends Node
 var _services: Dictionary = {
 	"Log": LoggerService, # init first so other services can use it
 	"System": SystemService,
+	"Random": RandomService,
 	"Events": EventService,
 	"Nodes": NodeService,
 	"ObjectPool": ObjectPoolService,
