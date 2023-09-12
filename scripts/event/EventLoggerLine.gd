@@ -10,18 +10,22 @@
 class_name EventLoggerLine
 extends Event
 
+var _name
 var _level: String
 var _value: String
 var _data_name
 var _data_value
 
 # object constructor
-func _init(level: String, value: String, data_name, data_value):
+func _init(name, level: String, value: String, data_name, data_value):
+	_name = name
 	_level = level
 	_value = value
 	_data_name = data_name
 	_data_value = data_value
 
+func get_name():
+	return _name
 func get_level():
 	return _level
 func get_value():
