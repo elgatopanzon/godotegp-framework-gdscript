@@ -29,7 +29,7 @@ func _init(_seed: int = 0, _state: int = 0):
 func _to_string():
 	return "RandomNumberGeneratorExtended"
 
-func as_dict():
+func to_dict():
 	return {
 		"seed": self.seed,
 		"state": self.state,

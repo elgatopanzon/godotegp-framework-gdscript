@@ -105,12 +105,12 @@ func get_fetch_queue():
 
 # allow object to subscribe Events emitted by emit() and emit_now()
 func subscribe(subscription: EventSubscription):
-	logger().debug("Registering EventSubscription", "subscription", subscription.as_dict())
+	logger().debug("Registering EventSubscription", "subscription", subscription.to_dict())
 
 	if subscription not in _subscriptions:
 		_subscriptions.append(subscription)
 	else:
-		logger().debug("Subscription already registered", "subscription", subscription.as_dict())
+		logger().debug("Subscription already registered", "subscription", subscription.to_dict())
 
 
 # allow unsubscribing from events
@@ -119,7 +119,7 @@ func unsubscribe(subscriber: Object, event_type = Event):
 
 	for subscription in _subscriptions:
 		if subscription.get_subscriber() == subscriber and (subscription.get_event_type() == event_type or event_type == Event):
-			logger().debug("Unsubscribing from events", "unsubscription", {"subscriber": subscription.as_dict()['subscriber'], "event_type": subscription.as_dict()['event_type']})
+			logger().debug("Unsubscribing from events", "unsubscription", {"subscriber": subscription.to_dict()['subscriber'], "event_type": subscription.to_dict()['event_type']})
 
 			unsubscribes.append(subscription)
 
@@ -147,7 +147,7 @@ func subscribe_signal(connect_object: Object, signal_name: String, subscription:
 	if not subscription._subscriber_callable:
 		subscription.set_subscriber_callable(Callable(subscription.get_subscriber(), "_on_EventSignal_%s" % [signal_name]))
 
-	logger().debug("Registering signal EventSubscription", "subscription", subscription.as_dict())
+	logger().debug("Registering signal EventSubscription", "subscription", subscription.to_dict())
 	logger().debug("...", "object", connect_object)
 	logger().debug("...", "signal", signal_name)
 
@@ -169,13 +169,13 @@ func _on_signal(signal_data = {}, signal_param = null):
 
 # emit an event to the deferred queue, to be processed in _process()
 func emit(event: Event, queue_name = "deferred"):
-	logger().debug("Event emit(%s)" % event, "event", event.as_dict())
+	logger().debug("Event emit(%s)" % event, "event", event.to_dict())
 
 	get_queue(queue_name).queue(event, false)
 
 # emit an event to the instant broadcast queue
 func emit_now(event: Event, queue_name = "instant"):
-	logger().debug("Event emit_now(%s)" % event, "event", event.as_dict())
+	logger().debug("Event emit_now(%s)" % event, "event", event.to_dict())
 
 	get_queue(queue_name).queue(event, false)
 
@@ -183,13 +183,13 @@ func emit_now(event: Event, queue_name = "instant"):
 
 # emit an event to the deferred queue, but only consumed once
 func emit_once(event: Event, queue_name = "deferred"):
-	logger().debug("Event emit_once(%s)" % event, "event", event.as_dict())
+	logger().debug("Event emit_once(%s)" % event, "event", event.to_dict())
 	
 	get_queue(queue_name).queue(event, true)
 
 # emit an event to the instant broadcast queue, but only consumed once
 func emit_now_once(event: Event, queue_name = "instant"):
-	logger().debug("Event emit_now_once(%s)" % event, "event", event.as_dict())
+	logger().debug("Event emit_now_once(%s)" % event, "event", event.to_dict())
 
 	get_queue(queue_name).queue(event, true)
 
@@ -197,7 +197,7 @@ func emit_now_once(event: Event, queue_name = "instant"):
 
 # emit an event to the wait queue, to be fetched later
 func emit_wait(event: Event, queue_name = "fetch"):
-	logger().debug("Event emit_wait(%s)" % event, "event", event.as_dict())
+	logger().debug("Event emit_wait(%s)" % event, "event", event.to_dict())
 
 	get_queue(queue_name).queue(event, true)
 

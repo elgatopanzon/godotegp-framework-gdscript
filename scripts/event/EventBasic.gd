@@ -25,7 +25,7 @@ func init():
 func _to_string():
 	return "EventBasic"
 
-func as_dict():
+func to_dict():
 	return {
 		"single_consume": _single_consume,
 		"owner": _owner,

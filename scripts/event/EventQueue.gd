@@ -78,7 +78,7 @@ func queue(event: Event, single_consume: bool = false):
 	event.set_single_consume(single_consume)
 
 	logger().debug("Adding event to queue", "event_type", event)
-	logger().debug("...", "event", event.as_dict())
+	logger().debug("...", "event", event.to_dict())
 
 	_events.append(event)
 
@@ -107,7 +107,7 @@ func fetch(event_type = Event, event_filters: Array = [], count: int = 1):
 			continue
 
 		event.set_consumed(true)
-		logger().debug("Event processed from queue", "event", {"event": event.as_dict(), "consumed": event.get_consumed()})
+		logger().debug("Event processed from queue", "event", {"event": event.to_dict(), "consumed": event.get_consumed()})
 
 		matches.append(event)
 
@@ -146,7 +146,7 @@ func process_queue(subscriptions: Array[EventSubscription] = []):
 	for event in events:
 		for subscription in subscriptions:
 			if not event.is_valid():
-				logger().debug("Event is consumed, discarding", "event", event.as_dict())
+				logger().debug("Event is consumed, discarding", "event", event.to_dict())
 				continue
 
 			# include base type filter from event type
@@ -157,9 +157,9 @@ func process_queue(subscriptions: Array[EventSubscription] = []):
 				event.set_consumed(true)
 
 				broadcast_queue.append([event, subscription])
-				logger().debug("Queuing broadcast", "broadcast", {"event": event.as_dict(), "subscription": subscription.as_dict()})
+				logger().debug("Queuing broadcast", "broadcast", {"event": event.to_dict(), "subscription": subscription.to_dict()})
 
-		logger().debug("Event processed from queue", "event", {"event": event.as_dict(), "consumed": event.get_consumed()})
+		logger().debug("Event processed from queue", "event", {"event": event.to_dict(), "consumed": event.get_consumed()})
 
 	for broadcast in broadcast_queue:
 		broadcast_event(broadcast[0], broadcast[1])
@@ -167,8 +167,8 @@ func process_queue(subscriptions: Array[EventSubscription] = []):
 # broadcast an event to an EventSubscription
 func broadcast_event(event: Event, subscription: EventSubscription):
 	var event_type = event.to_string()
-	logger().debug("Broadcasting %s to subscriber" % event_type, "event", event.as_dict())
-	logger().debug("...", "subscription", subscription.as_dict())
+	logger().debug("Broadcasting %s to subscriber" % event_type, "event", event.to_dict())
+	logger().debug("...", "subscription", subscription.to_dict())
 
 	var callables = []
 

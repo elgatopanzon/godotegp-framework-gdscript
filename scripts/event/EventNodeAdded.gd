@@ -28,7 +28,7 @@ func init():
 func _to_string():
 	return "EventNodeAdded"
 
-func as_dict():
+func to_dict():
 	return {
 		"node": _node
 	}

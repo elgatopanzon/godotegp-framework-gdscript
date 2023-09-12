@@ -28,7 +28,7 @@ func _init(subscriber: Object, event_type = Event, event_filters: Array = [], su
 func _to_string():
 	return "EventSubscription"
 
-func as_dict():
+func to_dict():
 	return {
 		"subscriber": _subscriber.to_string(),
 		"subscriber_callable": _subscriber_callable,

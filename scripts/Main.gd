@@ -123,6 +123,6 @@ func get_logger_name():
 	return "GodotEGP.Main"
 
 func _on_EventBasic(event: Event):
-	Services.Log.Test.debug("Received broadcasted EventBasic event", "event", event.as_dict())
+	Services.Log.Test.debug("Received broadcasted EventBasic event", "event", event.to_dict())
 func _on_EventTest(event: Event):
-	Services.Log.Test.debug("Received broadcasted EventTest event", "event", event.as_dict())
+	Services.Log.Test.debug("Received broadcasted EventTest event", "event", event.to_dict())

@@ -73,7 +73,7 @@ func reinit():
 
 # register new RNG
 func register_rng(rng: RandomNumberGeneratorExtended, name):
-	logger().debug("Registering RNG instance", "rng", {"name": name, "rng": rng.as_dict()})
+	logger().debug("Registering RNG instance", "rng", {"name": name, "rng": rng.to_dict()})
 	_rng_instances[name] = rng
 
 func get_new_rng(seed: int = 0, state: int = 0):

@@ -23,7 +23,7 @@ func _init(owner: Object, signal_name: String, signal_data):
 func init():
 	return self
 
-func as_dict():
+func to_dict():
 	return {
 		"single_consume": _single_consume,
 		"owner": _owner,

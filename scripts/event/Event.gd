@@ -25,7 +25,7 @@ func _to_string():
 func get_broadcast_method_string():
 	return _to_string()
 
-func as_dict():
+func to_dict():
 	return {}
 
 # used by ObjectPool
