@@ -10,16 +10,20 @@
 class_name GodotEGPFramework
 extends Node
 
+var _services: Dictionary = {
+	"Log": LoggerService, # init first so other services can use it
+	"Events": EventService,
+	"ObjectPool": ObjectPoolService,
+}
+
 # object constructor
 func _init():
 	# init and register services
-	# logging
-	Services.register_service(LoggerService.new(), "Log")
+	for service in _services:
+		Services.register_service(_services[service].new(), service)
 
+	# set default log level
 	Services.Log.set_default_log_level("debug")
-
-	# object pool
-	Services.register_service(ObjectPoolService.new(), "ObjectPool")
 
 	# logging test using self as group
 	Services.Log.register_logger("default", self)
@@ -50,9 +54,6 @@ func _init():
 	Services.Log.Test.debug("order test 8")
 	Services.Log.Test.debug("order test 9")
 	Services.Log.Test.debug("order test 10")
-
-	# event service
-	Services.register_service(EventService.new(), "Events")
 
 	# test event
 	Services.Events.emit(EventBasic.new(self, "was emitted using emit()"))
