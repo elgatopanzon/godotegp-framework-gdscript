@@ -66,8 +66,11 @@ func set_default_log_level(level: String):
 
 # process methods
 # called during main loop processing
-# func _process(delta: float):
-#	pass
+func _process(delta: float):
+	for lc_id in _logger_collections:
+		var lc = _logger_collections[lc_id]
+		if lc._queue_enabled:
+			lc.process_queue()
 
 # called during physics processing
 # func _physics_process(delta: float):
@@ -79,8 +82,6 @@ func create_logger_collection(group_id, level):
 	lc.set_level(level) # set the log level to the default
 
 	_logger_collections[group_id] = lc 
-
-	add_child(lc)
 
 	return lc
 
