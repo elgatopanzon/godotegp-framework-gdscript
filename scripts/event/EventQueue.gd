@@ -140,6 +140,8 @@ func process_queue(subscriptions: Array[EventSubscription] = []):
 	# fetch all events from queue, no filters
 	var events = fetch(Event, [], 0)
 
+	var broadcast_queue = []
+
 	# loop over all events and look for matching subscriptions
 	for event in events:
 		for subscription in subscriptions:
@@ -154,10 +156,13 @@ func process_queue(subscriptions: Array[EventSubscription] = []):
 			if event_matches_filters(event, event_filters):
 				event.set_consumed(true)
 
-				broadcast_event(event, subscription)
+				broadcast_queue.append([event, subscription])
+				logger().debug("Queuing broadcast", "broadcast", {"event": event.as_dict(), "subscription": subscription.as_dict()})
 
 		logger().debug("Event processed from queue", "event", {"event": event.as_dict(), "consumed": event.get_consumed()})
-		
+
+	for broadcast in broadcast_queue:
+		broadcast_event(broadcast[0], broadcast[1])
 
 # broadcast an event to an EventSubscription
 func broadcast_event(event: Event, subscription: EventSubscription):
