@@ -117,11 +117,11 @@ func log(log_level: String, value, data_name = null, data = null):
 			Services.Log.queue_logging_event(EventLoggerLine.new(_name, log_level, value, data_name, data, self))
 		else:
 			# no queue, process it right now
-			log_to_loggers(log_level, value, data_name, data)
+			log_to_loggers(null, log_level, value, data_name, data)
 
-func log_to_loggers(log_level, value, data_name, data):
+func log_to_loggers(time, log_level, value, data_name, data):
 	for logger in _loggers:
-		var log_result = logger.log(_name, log_level, value, data_name, data)
+		var log_result = logger.log(time, _name, log_level, value, data_name, data)
 
 # check if we can log with a given log level
 func can_log_with_level(log_level: String):
@@ -129,4 +129,4 @@ func can_log_with_level(log_level: String):
 
 # process an EventLoggerLine event
 func process_event(event: EventLoggerLine):
-	log_to_loggers(event.get_level(), event.get_value(), event.get_data_name(), event.get_data_value())
+	log_to_loggers(event.get_time(), event.get_level(), event.get_value(), event.get_data_name(), event.get_data_value())

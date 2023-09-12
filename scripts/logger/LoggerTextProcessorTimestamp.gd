@@ -54,7 +54,7 @@ func process_value(value, value_original):
 func process(value, value_original):
 	var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
-	var current_time = Time.get_datetime_dict_from_system()
+	var current_time = get_destination_owner()._line_time
 	return "[%s] %s %s %s %s:%s:%s" % [get_engine_ticks(), str(current_time.day).pad_zeros(2), months[current_time.month], current_time.year, str(current_time.hour).pad_zeros(2), str(current_time.minute).pad_zeros(2), str(current_time.second).pad_zeros(2)]
 
 func get_engine_ticks():

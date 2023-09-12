@@ -10,6 +10,7 @@
 class_name EventLoggerLine
 extends Event
 
+var _time
 var _name
 var _level: String
 var _value: String
@@ -19,6 +20,8 @@ var _logger_collection: LoggerCollection
 
 # object constructor
 func _init(name, level: String, value: String, data_name, data_value, logger_collection: LoggerCollection):
+	_time = Time.get_datetime_dict_from_system() # create the data the moment we create the event
+
 	_name = name
 	_level = level
 	_value = value
@@ -26,6 +29,8 @@ func _init(name, level: String, value: String, data_name, data_value, logger_col
 	_data_value = data_value
 	_logger_collection = logger_collection
 
+func get_time():
+	return _time
 func get_name():
 	return _name
 func get_level():

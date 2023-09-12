@@ -26,6 +26,9 @@ func init(logger_destination_owner: LoggerDestination):
 func set_current_line(line_no):
 	_logger_line_current = line_no
 
+func get_destination_owner():
+	return _logger_destination_owner
+
 # object destructor
 # func _notification(what):
 #     if (what == NOTIFICATION_PREDELETE):

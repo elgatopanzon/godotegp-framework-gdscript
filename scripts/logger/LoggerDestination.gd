@@ -14,6 +14,7 @@ extends Node
 var _text_blocks: Array[LoggerTextBlock]
 
 # hold current line info
+var _line_time
 var _line_name
 var _line_level
 var _line_value
@@ -53,19 +54,20 @@ func _init():
 #	pass
 
 # most basic implementation is writing to the console
-func write(name, level: String, value, data_name = null, data = null):
+func write(time, name, level: String, value, data_name = null, data = null):
 	# support array of 2 components (name + data) or single variable dump
 	if data != null:
 		data = [data_name, data]
 	else:
 		data = data_name
 
-	set_current_line_data(name, level, value, data)
+	set_current_line_data(time, name, level, value, data)
 
 	write_rendered()
 
 # set current line data
-func set_current_line_data(name, level, value, data):
+func set_current_line_data(time, name, level, value, data):
+	_line_time = time
 	_line_name = name
 	_line_level = level
 	_line_value = value
@@ -112,7 +114,7 @@ func get_rendered_text_blocks():
 
 			# set value of text block
 			if text_block._type == "timestamp":
-				text_block.set_value("timestamp")
+				text_block.set_value("")
 			elif text_block._type == "name":
 				text_block.set_value(_line_name)
 			elif text_block._type == "level":
