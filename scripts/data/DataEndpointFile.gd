@@ -29,9 +29,6 @@ func _init(file_path: String, file_ext: String = ""):
 	else:
 		_file_ext = _file_path.get_extension()
 
-	logger().debug("file path", "path", _file_path)
-	logger().debug("file extension", "ext", _file_ext)
-
 func init():
 	return self
 
