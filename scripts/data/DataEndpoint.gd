@@ -1,30 +1,32 @@
 ######################################################################
 # @author      : ElGatoPanzon
-# @class       : DataResource
-# @created     : Tuesday Sep 12, 2023 20:04:57 CST
+# @class       : DataEndpoint
+# @created     : Tuesday Sep 12, 2023 20:49:21 CST
 # @copyright   : Copyright (c) ElGatoPanzon 2023
 #
-# @description : Base class allows stores data and validating schema
+# @description : Base class for DataEndpoint objects
 ######################################################################
 
-class_name DataResource
+class_name DataEndpoint
 extends Resource
 
-var _data: Dictionary
+var _data_resource: DataResource
 
+# object constructor
 func _init():
 	pass
 
-# take the loaded data and validate it, called usually by the Data object during loading
-func init(loaded_data):
+func init():
 	return self
+
+func get_data_resource():
+	return _data_resource
+func set_data_resource(data_resource: Resource):
+	_data_resource = data_resource
 
 # friendly name when printing object
 func _to_string():
-	return "DataResource"
-
-func to_dict():
-	return _data
+	return "DataEndpoint"
 
 # integration with Services.Log
 func logger():
@@ -65,7 +67,11 @@ func reinit():
 # func _physics_process(delta: float):
 #	pass
 
-# directly set the data of the resource (only for testing!)
-func from_dict(dict: Dictionary):
-	_data = dict
+func load_data():
+	return true
+
+func save_data():
+	return true
+
+func save_loaded_resource():
 	return true

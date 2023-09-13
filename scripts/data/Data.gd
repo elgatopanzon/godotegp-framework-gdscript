@@ -10,11 +10,11 @@
 class_name Data
 extends Resource
 
-var _data_endpoint
-var _data_resource: Resource
+var _data_endpoint: DataEndpoint
+var _data_resource: DataResource
 
 # object constructor
-func _init(data_endpoint, data_resource: Resource):
+func _init(data_endpoint: DataEndpoint, data_resource: DataResource):
 	set_data_resource(data_resource)
 	set_data_endpoint(data_endpoint)
 
@@ -45,20 +45,17 @@ func prepare():
 func reinit():
 	pass
 
-# load_check function checks loading is possible
-func load_check():
-	return true
-
-# save check function checks saving is possible
-func save_check():
-	return true
-
 # load function executes the loading operation
 func load_data():
-	logger().debug("Dummy loading data from endpoint", "endpoint", get_data_endpoint())
-	return get_data_resource()
+	logger().debug("Loading data from endpoint", "dataload", {"endpoint": get_data_endpoint(), "resource": get_data_resource()})
+
+	var loaded_data = get_data_endpoint().load_data()
+	return get_data_resource().init(loaded_data)
 
 # save function executes the saving operation
 func save_data():
-	logger().debug("Dummy saving data to console", "data", get_data_resource().to_dict())
-	return true
+	logger().debug("Saving data to endpoint", "datasave", {"endpoint": get_data_endpoint(), "resource": get_data_resource()})
+
+	# save the resource to the endpoint
+	get_data_endpoint().set_data_resource(get_data_resource())
+	return get_data_endpoint().save_loaded_resource()
