@@ -54,7 +54,7 @@ func load_data():
 	if loaded_data:
 		return get_data_resource().init(loaded_data)
 	else:
-		logger().debug("Data loading failed", "dataload", {"endpoint": get_data_endpoint(), "resource": get_data_resource(), "error": loaded_data})
+		logger().critical("Data loading failed", "dataload", {"endpoint": get_data_endpoint(), "resource": get_data_resource(), "error": loaded_data})
 
 		return null # failed somewhere loading the data, handle it better
 
@@ -68,6 +68,6 @@ func save_data():
 	var save_result = get_data_endpoint().save_loaded_resource()
 
 	if not save_result:
-		logger().debug("Data saving failed", "dataload", {"endpoint": get_data_endpoint(), "resource": get_data_resource(), "error": save_result})
+		logger().critical("Data saving failed", "dataload", {"endpoint": get_data_endpoint(), "resource": get_data_resource(), "error": save_result})
 
 	return save_result
