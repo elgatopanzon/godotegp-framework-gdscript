@@ -40,8 +40,6 @@ func load_from_file():
 	while not _file_object.eof_reached():
 		var csv_line = _file_object.get_csv_line()
 
-		print(csv_line)
-
 		var csv_line_dict = {}
 
 		var csv_item_counter = 0
@@ -64,11 +62,16 @@ func load_from_file():
 			parsed_csv.append(csv_line_dict)
 
 		line_counter += 1
-
 	
-	print(parsed_csv)
 	return parsed_csv
 
 
-func save_to_file():
-	pass
+func save_to_file(data_resource: DataResource):
+	# TODO
+	# derive headings and type from first passed data object
+	# verify future items match the same type
+	# verify only flat objects (no nested arrays or dicts)
+	# extract data values by heading key for each line
+	# store the csv lines (force saving with quotes and escaping)
+
+	return null # for now, we won't support saving CSV until we need to
