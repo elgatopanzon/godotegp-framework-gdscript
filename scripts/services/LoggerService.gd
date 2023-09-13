@@ -72,6 +72,11 @@ func set_default_log_level(level: String):
 # called during main loop processing
 func _process(delta: float):
 	# process the queue
+	if _logger_event_queue.size() >= 100:
+		_logger_event_queue_process_max = 1
+	else:
+		_logger_event_queue_process_max = 100
+
 	var counter = 0
 	while _logger_event_queue.size() > 0 and counter < _logger_event_queue_process_max:
 		var event = _logger_event_queue.pop_front()

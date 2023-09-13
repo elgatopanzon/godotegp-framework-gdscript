@@ -12,6 +12,8 @@ extends DataEndpoint
 
 var FILETYPE_IMPLEMENTS = [
 	DataEndpointFiletypeText.new(),
+	DataEndpointFiletypeCSV.new(),
+	DataEndpointFiletypeINI.new(),
 ]
 
 
