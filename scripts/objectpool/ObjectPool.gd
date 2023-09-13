@@ -52,11 +52,11 @@ func _init(primary_class: String, base_class: String = "", script_path: String =
 #	pass
 
 # return or instance a new object
-func instantiate():
-	return get_or_create_instance()
+func instantiate(params: Array = []):
+	return get_or_create_instance(params)
 
 # create an ininstantiated instance of an object
-func get_or_create_instance():
+func get_or_create_instance(params: Array = []):
 	var instance
 
 	if _object_pool.size() > 0:
@@ -74,9 +74,11 @@ func get_or_create_instance():
 		if is_custom_class(): 
 			# it's a scene or a custom class
 			# return it uninstanced
-			instance = load(_script_path).new()
+			# instance = load(_script_path).new()
 
-			return instance
+			var instantiate_callable = Callable(load(_script_path), "new")
+
+			return instantiate_callable.bindv(params).call()
 		else: 
 			# it's a builtin class
 			instance = ClassDB.instantiate(_primary_class)
