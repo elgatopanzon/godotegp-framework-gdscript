@@ -19,7 +19,11 @@ var _levels = ["debug", "info", "warning", "error", "critical"]
 var _enabled: bool = true
 
 var _queue: Array[EventLoggerLine]
-var _queue_enabled: bool = true
+
+# queue has some side effects
+# 1. crash loses the current queue
+# 2. objects are printed late, when their values already changed
+var _queue_enabled: bool = false
 
 # object constructor
 func _init(level: String = "debug"):
