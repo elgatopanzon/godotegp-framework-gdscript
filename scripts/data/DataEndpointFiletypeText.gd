@@ -90,20 +90,22 @@ func process_load_from_file(file_path, file_ext):
 func process_save_to_file(file_path, file_ext, data_resource):
 	var file = get_file_object(file_path, FileAccess.WRITE_READ)
 
-	if file_ext == "json":
-		var stringified_json = JSON.stringify(data_resource._data)
-		if stringified_json:
-			file.store_line(stringified_json)
+	if file:
+		if file_ext == "json":
+			var stringified_json = JSON.stringify(data_resource._data)
+			if stringified_json:
+				file.store_line(stringified_json)
+			else:
+				return false
 		else:
-			return false
+			file.store_string(str(data_resource._data))
+
+		var file_error = file.get_error()
+		file.close()
+
+		if file_error:
+			return file_error
+		else:
+			return true
 	else:
-		file.store_string(str(data_resource._data))
-
-	var file_error = file.get_error()
-
-	file.close()
-
-	if file_error:
-		return file_error
-	else:
-		return true
+		return null
