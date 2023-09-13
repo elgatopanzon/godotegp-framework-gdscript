@@ -12,10 +12,6 @@ extends Resource
 
 var _data_resource: DataResource
 
-# object constructor
-func _init():
-	pass
-
 func init():
 	return self
 
@@ -74,4 +70,4 @@ func save_data():
 	return true
 
 func save_loaded_resource():
-	return true
+	return save_data()

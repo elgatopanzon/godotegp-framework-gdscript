@@ -50,7 +50,11 @@ func load_data():
 	logger().debug("Loading data from endpoint", "dataload", {"endpoint": get_data_endpoint(), "resource": get_data_resource()})
 
 	var loaded_data = get_data_endpoint().load_data()
-	return get_data_resource().init(loaded_data)
+
+	if loaded_data:
+		return get_data_resource().init(loaded_data)
+	else:
+		return null # failed somewhere loading the data, handle it better
 
 # save function executes the saving operation
 func save_data():

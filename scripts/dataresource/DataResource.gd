@@ -10,13 +10,16 @@
 class_name DataResource
 extends Resource
 
-var _data: Dictionary
+var _data
 
 func _init():
 	pass
 
 # take the loaded data and validate it, called usually by the Data object during loading
 func init(loaded_data):
+	if loaded_data:
+		_data = loaded_data # no validation for now
+
 	return self
 
 # friendly name when printing object
