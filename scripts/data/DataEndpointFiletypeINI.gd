@@ -36,7 +36,7 @@ func reinit():
 	pass
 
 func load_from_file():
-	var load_error = _config_object.load(_file_object.get_path())
+	var load_error = _config_object.parse(get_file_as_text())
 
 	if load_error != OK:
 		logger().critical("Error reading INI content", "file", _file_object.get_path())
