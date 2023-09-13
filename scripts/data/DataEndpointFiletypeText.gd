@@ -70,6 +70,7 @@ func process_load_from_file(file_path, file_ext):
 		var file_error = file.get_error()
 		file.close()
 
+		# override text file content
 		if file_ext == "json":
 			var json = JSON.new()
 			var parsed_json_result = json.parse(file_content)
@@ -77,14 +78,22 @@ func process_load_from_file(file_path, file_ext):
 			if parsed_json_result == OK:
 				file_content = json.data
 			else:
+				logger().critical("Parsing loaded JSON failed", "path", file_path)
+				logger().critical("...", "error", json.get_error_message())
+
 				return parsed_json_result
 
 
 		if not file_content:
+			logger().critical("Loading file text failed", "path", file_path)
+			logger().critical("...", "error", file_error)
+
 			return file_error
 		else:
 			return file_content
 	else:
+		logger().critical("File read access error occured", "path", file_path)
+
 		return null
 
 func process_save_to_file(file_path, file_ext, data_resource):
@@ -96,6 +105,8 @@ func process_save_to_file(file_path, file_ext, data_resource):
 			if stringified_json:
 				file.store_line(stringified_json)
 			else:
+				logger().critical("Parsing JSON failed while writing", "path", file_path)
+
 				return false
 		else:
 			file.store_string(str(data_resource._data))
@@ -104,8 +115,13 @@ func process_save_to_file(file_path, file_ext, data_resource):
 		file.close()
 
 		if file_error:
+			logger().critical("File write error occured", "path", file_path)
+			logger().critical("...", "error", file_error)
+
 			return file_error
 		else:
 			return true
 	else:
+		logger().critical("File write access error occured", "path", file_path)
+
 		return null

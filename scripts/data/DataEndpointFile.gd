@@ -62,6 +62,10 @@ func get_extension_implementation():
 func load_data():
 	var imp = get_extension_implementation()
 
+	if not FileAccess.file_exists(_file_path):
+		logger().critical("File not found", "path", _file_path)
+		return null
+
 	if not imp:
 		return null
 	else:

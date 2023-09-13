@@ -68,6 +68,6 @@ func save_data():
 	var save_result = get_data_endpoint().save_loaded_resource()
 
 	if not save_result:
-		logger().critical("Data saving failed", "dataload", {"endpoint": get_data_endpoint(), "resource": get_data_resource(), "error": save_result})
+		logger().critical("Data write failed", "dataload", {"endpoint": get_data_endpoint(), "resource": get_data_resource(), "error": save_result})
 
 	return save_result
