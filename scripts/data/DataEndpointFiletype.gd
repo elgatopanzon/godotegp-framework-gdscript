@@ -12,12 +12,25 @@ extends Resource
 
 var SUPPORTED_EXTENSIONS = [] 
 
+var _file_object: FileAccess
+var _file_ext: String # override how we treat the file
+
 # object constructor
 func _init():
 	pass
 
 func init():
 	return self
+
+func set_file_object(file: FileAccess):
+	_file_object = file
+func get_file_object():
+	return _file_object
+
+func get_file_ext():
+	return _file_ext
+func set_file_ext(ext: String):
+	_file_ext = ext
 
 # friendly name when printing object
 func _to_string():
@@ -36,17 +49,15 @@ func reinit():
 func is_supported_extension(ext: String):
 	return ext in SUPPORTED_EXTENSIONS
 
-func load_from_file(file_path: String, file_ext: String):
-	return process_load_from_file(file_path, file_ext)
+# get file content as text
+func get_file_as_text(skip_cr: bool = true):
+	var file_content = _file_object.get_as_text(skip_cr)
+	var file_error = _file_object.get_error()
 
-func save_to_file(file_path: String, file_ext: String, data_resource: DataResource):
-	return process_save_to_file(file_path, file_ext, data_resource)
+	if file_error:
+		logger().critical("Get file as text failed", "path", _file_object.get_path())
+		logger().critical("...", "error", file_error)
 
-func get_file_object(file_path: String, access_type: int = FileAccess.READ_WRITE):
-	return FileAccess.open(file_path, access_type)
+		return null
 
-func process_load_from_file(file_path, file_ext):
-	return true
-
-func process_save_to_file(file_path, file_ext, data_resource):
-	return true
+	return file_content

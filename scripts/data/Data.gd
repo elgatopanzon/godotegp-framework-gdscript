@@ -18,6 +18,8 @@ func _init(data_endpoint: DataEndpoint, data_resource: DataResource):
 	set_data_resource(data_resource)
 	set_data_endpoint(data_endpoint)
 
+	logger().debug("Creating Data operation request", "data", {"endpoint": get_data_endpoint().to_dict(), "resource": get_data_resource()})
+
 func init():
 	return self
 
@@ -47,20 +49,20 @@ func reinit():
 
 # load function executes the loading operation
 func load_data():
-	logger().debug("Loading data from endpoint", "dataload", {"endpoint": get_data_endpoint(), "resource": get_data_resource()})
+	logger().debug("Loading data from endpoint", "data", {"endpoint": get_data_endpoint().to_dict(), "resource": get_data_resource()})
 
 	var loaded_data = get_data_endpoint().load_data()
 
 	if loaded_data:
 		return get_data_resource().init(loaded_data)
 	else:
-		logger().critical("Data loading failed", "dataload", {"endpoint": get_data_endpoint(), "resource": get_data_resource(), "error": loaded_data})
+		logger().critical("Data loading failed", "data", {"endpoint": get_data_endpoint().to_dict(), "resource": get_data_resource(), "error": loaded_data})
 
 		return null # failed somewhere loading the data, handle it better
 
 # save function executes the saving operation
 func save_data():
-	logger().debug("Saving data to endpoint", "datasave", {"endpoint": get_data_endpoint(), "resource": get_data_resource()})
+	logger().debug("Saving data to endpoint", "data", {"endpoint": get_data_endpoint().to_dict(), "resource": get_data_resource()})
 
 	# save the resource to the endpoint
 	get_data_endpoint().set_data_resource(get_data_resource())
@@ -68,6 +70,6 @@ func save_data():
 	var save_result = get_data_endpoint().save_loaded_resource()
 
 	if not save_result:
-		logger().critical("Data write failed", "dataload", {"endpoint": get_data_endpoint(), "resource": get_data_resource(), "error": save_result})
+		logger().critical("Data write failed", "data", {"endpoint": get_data_endpoint().to_dict(), "resource": get_data_resource(), "error": save_result})
 
 	return save_result
