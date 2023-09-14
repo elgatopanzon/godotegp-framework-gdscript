@@ -12,6 +12,7 @@ extends Node
 
 var _services: Dictionary = {
 	"Log": LoggerService, # init first so other services can use it
+	"ObjectPool": ObjectPoolService,
 	"DataFS": DataServiceFS, # init first so other services can use it
 	"Data": DataService, # init first so other services can use it
 	"Config": ConfigService,
@@ -19,7 +20,6 @@ var _services: Dictionary = {
 	"Random": RandomService,
 	"Events": EventService,
 	"Nodes": NodeService,
-	"ObjectPool": ObjectPoolService,
 }
 
 func to_string():

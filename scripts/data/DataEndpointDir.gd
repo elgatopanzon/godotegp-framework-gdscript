@@ -19,10 +19,6 @@ func _init(dir_path: String):
 
 	_dir_object = DirAccess.open(_dir_path)
 
-	if not _dir_object:
-		logger().critical("Could not open directory", "path", _dir_path)
-		logger().critical("...", "error", DirAccess.get_open_error())
-
 func init():
 	return self
 
