@@ -11,6 +11,11 @@
 class_name DataService
 extends Service
 
+var FS: DataServiceFS
+
+func _init():
+	FS = Services.DataFS
+
 func init():
 	return self
 
