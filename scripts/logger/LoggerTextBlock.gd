@@ -38,6 +38,7 @@ func reinit():
 func set_value(value):
 	_value = value
 
+
 	if _line_length:
 		_line_strings = get_line_text()
 
@@ -122,12 +123,32 @@ func is_last_line():
 
 # deprecated: return line count based on line length
 func get_line_count():
-	return len(value_as_string()) / _line_length
+	var line_count = -1
+	for key in get_line_text():
+		line_count += 1
+	return line_count
 
 # return a dict with the key for each line of text to print
 func get_line_text():
-	var value_words = value_as_string().split(" ")
 	var value_lines = {}
+
+	# split data name and value
+	if typeof(_value) in [TYPE_ARRAY]:
+		var data_name = _value[0]
+
+		var line_count = 0
+
+		if typeof(_value[1]) == TYPE_DICTIONARY:
+			value_lines[line_count] = ["[color=cyan]%s[/color]=" % [data_name]]
+			for data_key in _value[1]:
+				line_count += 1
+				value_lines[line_count] = ["  [color=orange]%s[/color]: [color=pink]%s[/color]" % [data_key, _value[1][data_key]]]
+		else:
+			value_lines[line_count] = ["[color=cyan]%s[/color]=[color=pink]%s[/color]" % [data_name, _value[1]]]
+
+		return value_lines
+
+	var value_words = value_as_string().split(" ")
 
 	var value_line_char_count = 0
 	var value_line_line_count = 0

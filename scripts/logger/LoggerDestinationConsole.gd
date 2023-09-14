@@ -79,9 +79,9 @@ func setup_default_text_blocks():
 		LoggerTextProcessorColor.new().init(self).set_color("white", false),
 		processor_line_from_level,
 		]))
-	register_text_block(LoggerTextBlock.new().init("data", 0, [
-		LoggerTextProcessorPad.new().init(self).set_pad(0),
-		LoggerTextProcessorData.new().init(self),
+	register_text_block(LoggerTextBlock.new().init("data", 25, [
+		LoggerTextProcessorPad.new().init(self).set_pad(25),
+		# LoggerTextProcessorData.new().init(self),
 		processor_line_from_level,
 		]))
 
