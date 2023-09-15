@@ -10,6 +10,48 @@
 class_name DataResource
 extends Resource
 
+const TYPE_STRING_MAPPINGS: Dictionary = {
+	"null": TYPE_NIL,
+	"bool": TYPE_BOOL,
+	"int": TYPE_INT,
+	"float": TYPE_FLOAT,
+	"string": TYPE_STRING,
+	"vector2": TYPE_VECTOR2,
+	"vector2i": TYPE_VECTOR2I,
+	"rect2": TYPE_RECT2,
+	"rect2i": TYPE_RECT2I,
+	"vector3": TYPE_VECTOR3,
+	"vector3i": TYPE_VECTOR3I,
+	"transform2d": TYPE_TRANSFORM2D,
+	"vector4": TYPE_VECTOR4,
+	"vector4i": TYPE_VECTOR4I,
+	"plane": TYPE_PLANE,
+	"quaternion": TYPE_QUATERNION,
+	"aabb": TYPE_AABB,
+	"basis": TYPE_BASIS,
+	"transform3d": TYPE_TRANSFORM3D,
+	"projection": TYPE_PROJECTION,
+	"color": TYPE_COLOR,
+	"string_name": TYPE_STRING_NAME,
+	"node_path": TYPE_NODE_PATH,
+	"rid": TYPE_RID,
+	"object": TYPE_OBJECT,
+	"callable": TYPE_CALLABLE,
+	"signal": TYPE_SIGNAL,
+	"dict": TYPE_DICTIONARY,
+	"array": TYPE_ARRAY,
+	"packed_byte_array": TYPE_PACKED_BYTE_ARRAY,
+	"packed_int32_array": TYPE_PACKED_INT32_ARRAY,
+	"packed_int64_array": TYPE_PACKED_INT64_ARRAY,
+	"packed_float32_array": TYPE_PACKED_FLOAT32_ARRAY,
+	"packed_float64_array": TYPE_PACKED_FLOAT64_ARRAY,
+	"packed_string_array": TYPE_PACKED_STRING_ARRAY,
+	"packed_vector2_array": TYPE_PACKED_VECTOR2_ARRAY,
+	"packed_vector3_array": TYPE_PACKED_VECTOR3_ARRAY,
+	"packed_color_array": TYPE_PACKED_COLOR_ARRAY,
+	"max": TYPE_MAX,
+}
+
 var _data
 
 var _data_schema: Dictionary
@@ -18,9 +60,26 @@ func _init():
 	pass
 
 # take the loaded data and validate it, called usually by the Data object during loading
-func init(loaded_data):
-	if loaded_data:
-		_data = loaded_data # no validation for now
+func init(loaded_data = null):
+	if not loaded_data:
+		loaded_data = _data
+
+	# directly set data when there's no schema
+	if loaded_data != null:
+		_data = loaded_data
+
+		if has_schema():
+			# set and validate the data
+			var result = validate_data()
+
+			if not result:
+				logger().critical("Data validation failed for resource")
+
+				_data = null # clear it all, it's not valid
+
+				return null
+			else:
+				return self
 
 	return self
 
@@ -75,11 +134,14 @@ func from_dict(dict: Dictionary):
 	_data = dict
 	return true
 
-func merge(resource: DataResource):
+func merge_resource(resource: DataResource):
 	# basic implementation is to overwrite the data
-	_data = resource._data
+	if not has_schema():
+		_data = resource._data
 
-	return true
+		return true
+	else:
+		return process_resource_merge(resource, _data_schema, _data, resource._data)
 
 # data schema methods
 # all schema methods accept a dict object to work on, so we can use the same methods for any nested level
@@ -92,6 +154,8 @@ func schema_set_description(description: String, schema_object: Dictionary = _da
 
 func schema_set_type(type: String, schema_object: Dictionary = _data_schema):
 	schema_object['type'] = type
+
+	_data = schema_init_empty_value(schema_object)
 
 func schema_set_default(default, schema_object: Dictionary = _data_schema):
 	schema_object['default'] = default
@@ -127,3 +191,306 @@ func schema_add_property(id: String, property_data: Dictionary, schema_object: D
 # set key and value on schema object
 func schema_set(schema_key: String, value, schema_object: Dictionary = _data_schema):
 	schema_object[schema_key] = value
+
+func has_schema():
+	return (_data_schema)
+
+# validate the current data against the schema
+func validate_data():
+	logger().debug("Beginning data validation", "data", _data)
+	return validate_schema_level()
+
+# validate the given schema level recursively
+func validate_schema_level(schema_level: Dictionary = _data_schema, data = _data):
+	var valid = false
+
+	if data == null:
+		data = schema_init_empty_value(schema_level)
+
+	logger().debug("Schema validation: starting", "data", {"schema": schema_level, "data": data})
+
+	# if there's a custom callable, use it to validate
+	if schema_level.get("callable", null):
+		valid = schema_level['callable'].call(schema_level, data)
+
+		return valid
+
+	# if type was an object, load the data into the class's created instance
+	if schema_level['type'] == "object":
+		if typeof(data) != TYPE_OBJECT:
+			var instance = schema_init_empty_value(schema_level)
+
+			if not instance:
+				logger().error("Schema object validation: invalid class", "data", {"schema": schema_level, "data": data})
+				valid = false
+			else:
+				var valid_instance = instance.instantiate().init(data)
+
+				if valid_instance:
+					data = valid_instance
+					
+					valid = true
+				else:
+					logger().error("Schema object validation: invalid data", "data", {"schema": schema_level, "data": data})
+					valid = false
+
+		if not valid:
+			return false
+
+	# validate the type
+	valid = schema_validate_type(schema_level, data)
+
+	if not valid:
+		return false
+
+	# validate properties for type dict
+	if schema_level['type'] == "dict":
+		valid = schema_validate_properties(schema_level, data)
+
+	# validate items for type array
+	elif schema_level['type'] == "array":
+		valid = schema_validate_items(schema_level, data)
+
+
+	# note: create instance first, then assign data and then validate
+	elif schema_level['type'] == "object":
+		pass
+
+	if not valid:
+		return false
+
+	# validate the value itself
+	logger().debug("Schema value constraints: starting", "data", {"schema": schema_level, "data": data})
+	valid = schema_validate_constraints(schema_level, data)
+
+	if not valid:
+		return false
+
+	return valid
+
+func schema_validate_type(schema_level: Dictionary = _data_schema, data = _data):
+	var valid = false
+
+	logger().debug("Schema type: validating", "data", {"type": schema_level['type'], "data": data})
+
+	# validate using typeof
+	if schema_level['type'] in TYPE_STRING_MAPPINGS:
+		# cast to the expected number type if it's a valid number
+		if typeof(data) in [TYPE_INT, TYPE_FLOAT]:
+			if schema_level['type'] == "int":
+				data = int(data)
+			if schema_level['type'] == "float":
+				data = int(data)
+
+		valid = typeof(data) == TYPE_STRING_MAPPINGS[schema_level['type']]
+
+		# check if the object instance is correct
+		if schema_level['type'] == "object":
+			var expected_instance = Services.ObjectPool.get_object_pool(schema_level['object']).instantiate()
+
+			if data.get_script() != expected_instance.get_script():
+				logger().error("Schema type: object mismatch", "data", {"object": schema_level['object'], "actual_object": data})
+				valid = false
+
+			Services.ObjectPool.get_object_pool(schema_level['object']).return_instance(expected_instance)
+			
+		if not valid:
+			logger().error("Schema type: type mismatch", "data", {"type": schema_level['type'], "actual_type": schema_get_type_string(typeof(data)), "data": data})
+
+	else:
+		logger().error("Schema type: uncaught type", "data", {"type": typeof(data), "data": data})
+
+
+	logger().debug("Schema type: result", "result", valid)
+
+	return valid
+
+func schema_validate_properties(schema_level: Dictionary, data = _data):
+	var valid = false
+
+	# remove invalid properties
+	for property in data:
+		if not property in schema_level['properties']:
+			logger().warning("Schema property: ignoring unknown property", "property", property)
+			data.erase(property)
+
+	var invalid_properties = []
+	for property in schema_level['properties']:
+
+		logger().debug("Schema property: validating", "property", property)
+
+		var property_exists = (data.get(property, null) != null)
+
+		# handle when the property doesn't exist in the data we loaded
+		if not property_exists:
+			# check if property is required
+			var required = schema_level['properties'][property].get("required", null)
+
+			# init the default value if there is one
+			var default_value = schema_level['properties'][property].get("default", null)
+
+			if required:
+				logger().error("Schema property: required property missing", "property", property)
+
+				invalid_properties.append(property)
+
+			elif default_value:
+				data[property] = default_value
+
+				logger().debug("Schema property: setting default", "property", {"property": property, "default": default_value})
+
+			else:
+				var empty_default = schema_init_empty_value(schema_level['properties'][property])
+
+				if empty_default != null:
+					data[property] = empty_default
+
+		# check property is valid
+		if property not in invalid_properties:
+			var property_valid = validate_schema_level(schema_level['properties'][property], data.get(property, null))
+
+			if not property_valid:
+				invalid_properties.append(property)
+
+	if invalid_properties.size():		
+		logger().error("Schema property: invalid properties", "invalid_properties", invalid_properties)
+
+	else:
+		valid = true
+
+	logger().debug("Schema property: result", "result", valid)
+
+	return valid
+
+func schema_init_empty_value(schema_level: Dictionary):
+	if schema_level['type'] == "array":
+		return []
+	if schema_level['type'] == "dict":
+		return {}
+
+	# return a fresh instance of the object
+	if schema_level['type'] == "object":
+		return Services.ObjectPool.get_object_pool(schema_level['object'])
+
+func schema_validate_items(schema_level: Dictionary, data = _data):
+	var valid = false
+
+	var invalid_items = []
+	for item in data:
+		logger().debug("Schema item: validating", "item", item)
+
+		var item_valid = validate_schema_level(schema_level['items'], item)
+
+		if not item_valid:
+			invalid_items.append(item)
+
+	if invalid_items.size():		
+		logger().error("Schema property: invalid items", "invalid_items", invalid_items)
+
+	else:
+		valid = true
+
+	logger().debug("Schema item: result", "result", valid)
+
+	return valid
+
+func schema_validate_constraints(schema_level: Dictionary, data = _data):
+	var valid = true
+
+	for constraint in ['min_value', 'max_value', 'min_length', 'max_length', 'allowed_values', 'unique']:
+		if constraint in schema_level:
+			logger().debug("Schema value constraints: validating", "validation", {"constraint": {"type": constraint, "value": schema_level[constraint]}, "data": data})
+
+			if constraint == "min_value":
+				valid = (data >= schema_level[constraint])
+			elif constraint == "max_value":
+				valid = (data <= schema_level[constraint])
+
+			if constraint == "min_length":
+				valid = (len(data) >= schema_level[constraint])
+			elif constraint == "max_length":
+				valid = (len(data) <= schema_level[constraint])
+
+			elif constraint == "allowed_values":
+				valid = (data in schema_level[constraint])
+
+			elif constraint == "unique":
+				var seen = []
+				for item in data:
+					if not item in seen:
+						seen.append(item)
+
+					# found a duplicate
+					else:
+						valid = false
+						break
+				
+			# if one constraint doesn't match, break
+			if not valid:
+				logger().error("Schema value constraints: failed", "result", {"constraint": {"type": constraint, "value": schema_level[constraint]}, "data": data})
+				break
+
+
+	return valid
+
+
+
+func schema_get_type_string(type_value):
+	for type in TYPE_STRING_MAPPINGS:
+		if TYPE_STRING_MAPPINGS[type] == type_value:
+			return type
+
+
+# move through the scheme recursively and merge them
+func process_resource_merge(resource: DataResource, schema_level: Dictionary = _data_schema, data = _data, data_resource = null):
+	# overwrite values
+	logger().debug("Resource merge: starting")
+
+	if schema_level['type'] == "dict":
+		for property in schema_level['properties']:
+			if schema_level['properties'][property]['type'] == "dict":
+				process_resource_merge(resource, schema_level['properties'][property], data.get(property), data_resource.get(property))
+			else:
+				# override value if the data_resource value is different to the default
+				var default = schema_level['properties'][property].get("default", null)
+				if data_resource[property] != default and default != null:
+					data[property] = data_resource[property]
+
+		return true
+
+	# overwrite values
+	else:
+		data = data_resource
+
+	return data
+
+# allow getting values of a dict or array
+func _get(prop):
+	if _data_schema['type'] == "dict":
+		return _data.get(prop, null)
+	elif _data_schema['type'] == "array":
+		return _data[prop]
+	
+func _set(prop, value):
+	if _data_schema['type'] == "dict":
+		_data[prop] = value
+	elif _data_schema['type'] == "array":
+		_data[prop] = value
+
+# get data object from schema defaults
+func data_from_schema(schema_level: Dictionary = _data_schema, data = {}):
+	if schema_level['type'] == "dict":
+		for property in schema_level['properties']:
+			if schema_level['properties'][property]['type'] == "dict":
+				data[property] = data_from_schema(schema_level['properties'][property], data.get(property))
+			else:
+				# override value if the data_resource value is different to the default
+				if not data:
+					data = {}
+				data[property] = schema_level['properties'][property].get("default", null)
+
+	# overwrite values
+	else:
+		data = schema_level.get("default", null)
+
+	return data

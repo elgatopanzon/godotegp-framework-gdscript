@@ -138,6 +138,7 @@ func load_config_files():
 						register_config(item, instance)
 				else:
 					instance = get_config_instance(item)
+					instance.validate_data()
 
 				# check if there's any config files to load from the directory
 				var config_dir_contents_full = Services.Data.FS.ls(item_path)
@@ -159,4 +160,4 @@ func load_config_files():
 					# if the resource we got back is valid then the data was successfully validated and applied to the resource
 					if loaded_resource:
 						# merge resource with existing resource instance
-						instance.merge(loaded_resource)
+						instance.merge_resource(loaded_resource)

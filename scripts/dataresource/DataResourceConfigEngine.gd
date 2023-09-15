@@ -14,18 +14,20 @@ const ALLOWED_COLORS = ["black", "red", "green", "yellow", "blue", "magenta", "p
 
 # object constructor
 func _init():
-	var prop_ldc = schema_add_property("LoggerDestinationConsole", {
-		"type": TYPE_DICTIONARY,
+	schema_set_type("dict") # expected data is a dict
+
+	var prop_ldc = schema_add_property("logger_console", {
+		"type": "dict",
 	})
 
 	schema_add_property("color_timestamp", {
-		"type": TYPE_STRING,
+		"type": "string",
 		"default": "gray",
 		"allowed_values": ALLOWED_COLORS,
 	}, prop_ldc)
 	schema_add_property("color_name", {
 		"prototype": "color_timestamp",
-		"default": "blue",
+		"default": "gray",
 	}, prop_ldc)
 	schema_add_property("color_level_debug", {
 		"prototype": "color_timestamp",
@@ -37,7 +39,7 @@ func _init():
 	}, prop_ldc)
 	schema_add_property("color_level_warning", {
 		"prototype": "color_timestamp",
-		"default": "warning",
+		"default": "orange",
 	}, prop_ldc)
 	schema_add_property("color_level_error", {
 		"prototype": "color_timestamp",
@@ -68,7 +70,7 @@ func _init():
 	}, prop_ldc)
 
 	schema_add_property("padding_timestamp", {
-		"type": TYPE_INT,
+		"type": "int",
 		"default": 10,
 		"min_value": 10,
 		"max_value": 100,
@@ -86,16 +88,13 @@ func _init():
 		"prototype": "padding_timestamp",
 	}, prop_ldc)
 
-func init(loaded_data):
-	if loaded_data:
-		_data = loaded_data # validate later
-
 # friendly name when printing object
 func _to_string():
 	return "DataResourceConfigEngine"
 
 # integration with Services.Log
 func logger():
+	Services.Log.get(self.to_string()).set_level("warning")
 	return Services.Log.get(self.to_string())
 
 # used by ObjectPool
@@ -132,4 +131,3 @@ func reinit():
 # called during physics processing
 # func _physics_process(delta: float):
 #	pass
-

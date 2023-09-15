@@ -57,7 +57,7 @@ func setup_default_text_blocks():
 	register_text_block(LoggerTextBlock.new().init("timestamp", 30, [
 		LoggerTextProcessorTimestamp.new().init(self),
 		LoggerTextProcessorPad.new().init(self).set_pad(30),
-		LoggerTextProcessorColor.new().init(self).set_color("gray"),
+		LoggerTextProcessorColor.new().init(self).set_color(config().color_timestamp),
 		processor_line_from_level,
 		]))
 	register_text_block(LoggerTextBlock.new().init("name", 25, [
@@ -96,3 +96,9 @@ func write_rendered():
 
 		if _line_level in ['warning', 'error', 'critical']:
 			basic_write_to_console()
+
+func config():
+	if Services.get_service("Config"):
+		return Services.Config.ConfigEngine.logger_console
+	else:
+		return DataResourceConfigEngine.new().data_from_schema().logger_console # gets all default values
