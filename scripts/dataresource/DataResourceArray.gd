@@ -19,9 +19,10 @@ func _init(data_resource_type):
 	# init data as an array
 	_data = []
 
-func init(loaded_data):
+func init(loaded_data = null):
 	if typeof(loaded_data) != TYPE_ARRAY:
-		logger().critical("Expected an array of data", "loaded_data", loaded_data)
+		Services.Events.error(self, "array_expected", {"loaded_data": loaded_data})
+
 		return false
 	else:
 		return create_resource_objects(loaded_data)
@@ -80,7 +81,7 @@ func create_resource_objects(loaded_data: Array):
 		if resource:
 			_data.append(resource)
 		else:
-			logger().critical("Resource object creation failed", "data", {"resource_type": _data_resource_type.get_script().get_path().replace(".gd", ""), "data": data})
+			Services.Events.error(self, "resource_object_creation_failed", {"resource_type": _data_resource_type.get_script().get_path().replace(".gd", ""), "data": data})
 
 			return null
 

@@ -46,8 +46,7 @@ func load_from_file():
 		if parsed_json_result == OK:
 			file_content = json.data
 		else:
-			logger().critical("Parsing loaded JSON failed", "path", _file_object.get_path())
-			logger().critical("...", "error", json.get_error_message())
+			Services.Events.error(self, "parsing_json_failed", {"path": _file_object.get_path(), "error": parsed_json_result, "error_msg": json.get_error_message()})
 
 			return parsed_json_result
 
@@ -61,7 +60,7 @@ func save_to_file(data_resource):
 		if stringified_json:
 			_file_object.store_line(stringified_json)
 		else:
-			logger().critical("Stringify to JSON failed while writing", "path", _file_object.get_path())
+			Services.Events.error(self, "stringify_json_failed", {"path": _file_object.get_path()})
 
 			return null
 
@@ -72,10 +71,8 @@ func save_to_file(data_resource):
 	var file_error = _file_object.get_error()
 
 	if file_error:
-		logger().critical("Error writing file content", "path", _file_object.get_path())
-		logger().critical("...", "error", file_error)
+		Services.Events.error(self, "parsing_json_failed", {"path": _file_object.get_path(), "error": file_error})
 
 		return null
 
 	return true
-

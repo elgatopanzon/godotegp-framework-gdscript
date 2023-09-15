@@ -86,7 +86,7 @@ func create_config_instance(instance_type: String):
 	var op = Services.ObjectPool.get_object_pool("DataResource%s" % instance_type)
 
 	if not op:
-		logger().critical("Invalid config instance type", "instance_type", instance_type)
+		logger().warning("Invalid config instance type", "instance_type", instance_type)
 		return false
 
 	return op.instantiate()

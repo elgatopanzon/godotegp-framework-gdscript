@@ -148,7 +148,9 @@ func subscribe_signal(connect_object: Object, signal_name: String, subscription:
 	if not subscription._subscriber_callable:
 		subscription.set_subscriber_callable(Callable(subscription.get_subscriber(), "_on_EventSignal_%s" % [signal_name]))
 
-	logger().debug("Registering signal EventSubscription", "data", {"subscription": subscription.to_dict(), "object": connect_object, "signal": signal_name})
+	logger().debug("Registering signal EventSubscription", "subscription", subscription.to_dict())
+	logger().debug("...", "object", connect_object)
+	logger().debug("...", "signal", signal_name)
 
 
 	# register the subscription
@@ -161,7 +163,8 @@ func _on_signal(signal_data = {}, signal_param = null):
 		signal_data = signal_param
 		signal_param = temp
 
-	logger().debug("Signal received from node", "signal", {"signal_data": signal_data, "signal_param": signal_param})
+	logger().debug("Signal received from node", "signal_data", signal_data)
+	logger().debug("...", "signal_param", signal_param)
 
 	emit_now(EventSignal.new(signal_data.object, signal_data.name, signal_param))
 
@@ -211,3 +214,14 @@ func fetch_all(event_type = Event, event_filters: Array = []):
 # fetch X (and remove) events from wait queue matching event type
 func fetch(event_type = Event, event_filters: Array = [], count: int = 1):
 	return get_fetch_queue().fetch(event_type, event_filters, count)
+
+# shortcut to emit an EventError object to the error queue, designed to be fetched after certain operations have failed
+func error(obj: Object, type: String, data = null):
+	if obj.has_method("logger"):
+		obj.logger().error("Error: %s" % type, "data", data)
+	else:
+		Services.Log.get(obj.to_string()).error("Error: %s" % type, "data", data)
+
+	# add error event to queue
+	emit(EventError.new(obj, type, data), "error")
+

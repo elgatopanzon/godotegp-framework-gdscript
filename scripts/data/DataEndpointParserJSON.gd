@@ -41,7 +41,7 @@ func parse(content: String, content_type: String):
 		if parsed_json_result == OK:
 			content_parsed = json.data
 		else:
-			logger().critical("Parsing JSON failed", "data", {"content": content, "error": json.get_error_message()})
+			Services.Events.error(self, "parsing_failed", {"content": content, "error": json.get_error_message()})
 
 			return null
 
@@ -57,7 +57,7 @@ func unparse(content, content_type: String):
 		if stringified_json:
 			unparsed_content = stringified_json
 		else:
-			logger().critical("Stringify to JSON failed", "content", content)
+			Services.Events.error(self, "stringify_failed", {"content": content})
 
 			return null
 

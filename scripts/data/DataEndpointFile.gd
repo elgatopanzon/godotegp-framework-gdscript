@@ -71,15 +71,13 @@ func process_file_operation(type: int):
 
 	# file extension not implemented
 	if not extension_implementation:
-		logger().critical("Unsupported extension", "ext", _file_ext)
-		logger().critical("...", "path", _file_path)
-		logger().critical("...", "resource", _data_resource)
+		Services.Events.error(self, "unsupported_extension", {"ext": _file_ext, "path": _file_path, "resource": _data_resource})
 
 		return null	
 
 	# check if file exists when loading
 	if type == 0 and not FileAccess.file_exists(_file_path):
-		logger().critical("File not found", "path", _file_path)
+		Services.Events.error(self, "file_not_found", {"ext": _file_ext, "path": _file_path, "resource": _data_resource})
 
 		return null
 
@@ -91,7 +89,7 @@ func process_file_operation(type: int):
 
 	# if file is null we cant access the file
 	if not file:
-		logger().critical("Unable to get file handle", "path", _file_path)
+		Services.Events.error(self, "couldnt_obtain_handle", {"ext": _file_ext, "path": _file_path, "resource": _data_resource})
 
 		return file
 

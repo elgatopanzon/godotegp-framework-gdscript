@@ -114,6 +114,6 @@ func create_object_pool_instance(class_instance_name: String):
 
 		# not custom class or built-in
 		else:
-			logger().critical("not valid class", "class", class_instance_name)
+			logger().warning("Not a valid class instance", "class", class_instance_name)
 
 			return null

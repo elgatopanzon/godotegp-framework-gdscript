@@ -104,25 +104,21 @@ func process_web_operation(type: int):
 
 	# content type not implemented
 	if not content_parser:
-		logger().critical("Unsupported content type", "type", _content_type)
-		logger().critical("...", "url", _url)
-		logger().critical("...", "resource", _data_resource)
+		Services.Events.error(self, "content_type_unsupported", {"url": _url, "content_type": _content_type})
 
 		return null	
 
 	# make sure we can connect to the host
 	var connect_error = verify_connection()
 	if not connect_error == OK:
-		logger().critical("Unable to connect to URL", "url", _url)
-		logger().critical("...", "error", connect_error)
+		Services.Events.error(self, "connect_to_host_init_failed", {"url": _url, "error": connect_error})
 
 		return null
 
 	await init_connect()
 
 	if _http.get_status() != HTTPClient.STATUS_CONNECTED:
-		logger().critical("Connection to URL failed", "url", _url)
-		logger().critical("...", "status", _http.get_status())
+		Services.Events.error(self, "connect_to_host_failed", {"url": _url, "http_status": _http.get_status})
 
 		return null
 
@@ -149,15 +145,12 @@ func process_web_operation(type: int):
 	var request_success = (_http.get_status() == HTTPClient.STATUS_BODY or _http.get_status() == HTTPClient.STATUS_CONNECTED)
 
 	if not request_success:
-		logger().critical("HTTP request failed", "url", _url)
-		logger().critical("...", "path", _url_path)
-		logger().critical("...", "status", _http.get_status())
+		Services.Events.error(self, "connect_to_host_failed", {"url": _url, "path": _url_path, "http_status": _http.get_status})
 
 		return null
 
 	if not _http.has_response() and type == 0: # error if we're trying to load data
-		logger().critical("HTTP request has no response", "url", _url)
-		logger().critical("...", "path", _url_path)
+		Services.Events.error(self, "http_response_expected", {"url": _url, "path": _url_path, "http_status": _http.get_status})
 
 		return null
 
@@ -183,9 +176,7 @@ func process_web_operation(type: int):
 	var parsed_content = content_parser.parse(text_response, _content_type)
 
 	if parsed_content == null:
-		logger().critical("Failed to parse HTTP response data", "url", _url)
-		logger().critical("...", "path", _url_path)
-		logger().critical("...", "body", text_response)
+		Services.Events.error(self, "parsing_request_body_failed", {"url": _url, "path": _url_path, "body": text_response})
 
 		return null
 	

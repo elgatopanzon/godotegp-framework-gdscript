@@ -54,7 +54,7 @@ func walk(path: String = _dir_path, recursive: int = true, directory_contents = 
 	_dir_object = DirAccess.open(path)
 
 	if not _dir_object:
-		logger().critical("Could not open directory", "path", _dir_path)
+		Services.Events.error(self, "failed_to_open_directory", {"path": _dir_path, "resource": _data_resource})
 
 		return null
 

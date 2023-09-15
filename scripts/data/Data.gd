@@ -56,7 +56,9 @@ func load_data():
 	if loaded_data:
 		return get_data_resource().init(loaded_data)
 	else:
-		logger().critical("Data loading failed", "data", {"endpoint": get_data_endpoint().to_dict(), "resource": get_data_resource(), "error": loaded_data})
+		Services.Events.error(self, "data_loading_failed", {"endpoint": get_data_endpoint().to_dict(), "resource": get_data_resource(), "error": loaded_data})
+
+		# TODO: handle upstream errors here
 
 		return null # failed somewhere loading the data, handle it better
 
@@ -70,6 +72,8 @@ func save_data():
 	var save_result = get_data_endpoint().save_loaded_resource()
 
 	if not save_result:
-		logger().critical("Data write failed", "data", {"endpoint": get_data_endpoint().to_dict(), "resource": get_data_resource(), "error": save_result})
+		Services.Events.error(self, "data_writing_failed", {"endpoint": get_data_endpoint().to_dict(), "resource": get_data_resource(), "error": save_result})
+
+		# TODO: handle upstream errors here
 
 	return save_result

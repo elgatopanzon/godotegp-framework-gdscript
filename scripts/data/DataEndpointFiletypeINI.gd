@@ -39,8 +39,7 @@ func load_from_file():
 	var load_error = _config_object.parse(get_file_as_text())
 
 	if load_error != OK:
-		logger().critical("Error reading INI content", "file", _file_object.get_path())
-		logger().critical("...", "error", load_error)
+		Services.Events.error(self, "error_parsing_content", {"file": _file_object.get_path(), "error": load_error})
 
 		return null
 
@@ -53,8 +52,7 @@ func load_from_file():
 		if not parsed_dict.get(section):
 			parsed_dict[section] = {}
 		else:
-			logger().critical("Duplicate INI section found", "file", _file_object.get_path())
-			logger().critical("...", "section", section)
+			Services.Events.error(self, "duplicate_section_found", {"file": _file_object.get_path(), "section": section})
 
 			return null
 
@@ -82,8 +80,7 @@ func save_to_file(data_resource: DataResource):
 	var save_error = _config_object.save(_file_object.get_path())
 
 	if save_error != OK:
-		logger().critical("Error writing INI content", "file", _file_object.get_path())
-		logger().critical("...", "error", save_error)
+		Services.Events.error(self, "error_writing_content", {"file": _file_object.get_path(), "error": save_error})
 
 		return null
 

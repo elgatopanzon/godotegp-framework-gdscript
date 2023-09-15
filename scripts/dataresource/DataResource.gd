@@ -73,7 +73,7 @@ func init(loaded_data = null):
 			var result = validate_data()
 
 			if not result:
-				logger().critical("Data validation failed for resource")
+				Services.Events.error(self, "validation_failed")
 
 				_data = null # clear it all, it's not valid
 
@@ -221,7 +221,7 @@ func validate_schema_level(schema_level: Dictionary = _data_schema, data = _data
 			var instance = schema_init_empty_value(schema_level)
 
 			if not instance:
-				logger().error("Schema object validation: invalid class", "data", {"schema": schema_level, "data": data})
+				Services.Events.error(self, "schema_object_invalid_class", {"schema": schema_level, "data": data})
 				valid = false
 			else:
 				var valid_instance = instance.instantiate().init(data)
@@ -231,7 +231,7 @@ func validate_schema_level(schema_level: Dictionary = _data_schema, data = _data
 					
 					valid = true
 				else:
-					logger().error("Schema object validation: invalid data", "data", {"schema": schema_level, "data": data})
+					Services.Events.error(self, "schema_object_validation_failed", {"schema": schema_level, "data": data})
 					valid = false
 
 		if not valid:
@@ -289,16 +289,16 @@ func schema_validate_type(schema_level: Dictionary = _data_schema, data = _data)
 			var expected_instance = Services.ObjectPool.get_object_pool(schema_level['object']).instantiate()
 
 			if data.get_script() != expected_instance.get_script():
-				logger().error("Schema type: object mismatch", "data", {"object": schema_level['object'], "actual_object": data})
+				Services.Events.error(self, "schema_object_mismatch", {"object": schema_level['object'], "actual_object": data})
 				valid = false
 
 			Services.ObjectPool.get_object_pool(schema_level['object']).return_instance(expected_instance)
 			
 		if not valid:
-			logger().error("Schema type: type mismatch", "data", {"type": schema_level['type'], "actual_type": schema_get_type_string(typeof(data)), "data": data})
+			Services.Events.error(self, "schema_type_mismatch", {"type": schema_level['type'], "actual_type": schema_get_type_string(typeof(data)), "data": data})
 
 	else:
-		logger().error("Schema type: uncaught type", "data", {"type": typeof(data), "data": data})
+		Services.Events.error(self, "schema_uncaught_type", {"type": schema_level['type'], "actual_type": schema_get_type_string(typeof(data)), "data": data})
 
 
 	logger().debug("Schema type: result", "result", valid)
@@ -330,7 +330,7 @@ func schema_validate_properties(schema_level: Dictionary, data = _data):
 			var default_value = schema_level['properties'][property].get("default", null)
 
 			if required:
-				logger().error("Schema property: required property missing", "property", property)
+				Services.Events.error(self, "schema_required_property_missing", {"property": property})
 
 				invalid_properties.append(property)
 
@@ -353,7 +353,7 @@ func schema_validate_properties(schema_level: Dictionary, data = _data):
 				invalid_properties.append(property)
 
 	if invalid_properties.size():		
-		logger().error("Schema property: invalid properties", "invalid_properties", invalid_properties)
+		Services.Events.error(self, "schema_properties_invalid", {"properties": invalid_properties})
 
 	else:
 		valid = true
@@ -385,7 +385,7 @@ func schema_validate_items(schema_level: Dictionary, data = _data):
 			invalid_items.append(item)
 
 	if invalid_items.size():		
-		logger().error("Schema property: invalid items", "invalid_items", invalid_items)
+		Services.Events.error(self, "schema_items_invalid", {"items": invalid_items})
 
 	else:
 		valid = true
@@ -427,7 +427,7 @@ func schema_validate_constraints(schema_level: Dictionary, data = _data):
 				
 			# if one constraint doesn't match, break
 			if not valid:
-				logger().error("Schema value constraints: failed", "result", {"constraint": {"type": constraint, "value": schema_level[constraint]}, "data": data})
+				Services.Events.error(self, "schema_value_constraint_failed", {"constraint": {"type": constraint, "value": schema_level[constraint]}, "data": data})
 				break
 
 
