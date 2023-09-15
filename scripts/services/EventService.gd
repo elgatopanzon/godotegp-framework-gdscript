@@ -20,6 +20,7 @@ func _init():
 	register_queue(EventQueue.new("instant", 1))
 	register_queue(EventQueue.new("deferred", 2))
 	register_queue(EventQueue.new("fetch", 0))
+	register_queue(EventQueue.new("error", 0))
 
 func init():
 	return self
