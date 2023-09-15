@@ -225,3 +225,6 @@ func error(obj: Object, type: String, data = null):
 	# add error event to queue
 	emit(EventError.new(obj, type, data), "error")
 
+# fetch errors off the error queue
+func get_errors(filters = []):
+	return get_queue("error").fetch(EventError, filters, 0)
