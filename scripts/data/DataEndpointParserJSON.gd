@@ -41,8 +41,7 @@ func parse(content: String, content_type: String):
 		if parsed_json_result == OK:
 			content_parsed = json.data
 		else:
-			logger().critical("Parsing JSON failed", "content", content)
-			logger().critical("...", "error", json.get_error_message())
+			logger().critical("Parsing JSON failed", "data", {"content": content, "error": json.get_error_message()})
 
 			return null
 

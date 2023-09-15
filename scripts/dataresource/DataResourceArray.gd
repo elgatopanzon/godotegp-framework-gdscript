@@ -80,8 +80,7 @@ func create_resource_objects(loaded_data: Array):
 		if resource:
 			_data.append(resource)
 		else:
-			logger().critical("Resource object creation failed", "resource_type", _data_resource_type.get_script().get_path().replace(".gd", ""))
-			logger().critical("...", "data", data)
+			logger().critical("Resource object creation failed", "data", {"resource_type": _data_resource_type.get_script().get_path().replace(".gd", ""), "data": data})
 
 			return null
 

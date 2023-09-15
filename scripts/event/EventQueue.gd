@@ -77,8 +77,7 @@ func reinit():
 func queue(event: Event, single_consume: bool = false):
 	event.set_single_consume(single_consume)
 
-	logger().debug("Adding event to queue", "event_type", event)
-	logger().debug("...", "event", event.to_dict())
+	logger().debug("Adding event to queue", "event", {"event": event, "data": event.to_dict()})
 
 	_events.append(event)
 
@@ -125,8 +124,7 @@ func event_matches_filters(event: Event, event_filters: Array = []):
 			matches = false
 			break
 	
-	logger().debug("Event filter match result", "matches", matches)
-	logger().debug("...", "filters", event_filters)
+	logger().debug("Event filter match result", "result", {"matches": matches, "filters": event_filters})
 
 	return matches
 
@@ -167,8 +165,7 @@ func process_queue(subscriptions: Array[EventSubscription] = []):
 # broadcast an event to an EventSubscription
 func broadcast_event(event: Event, subscription: EventSubscription):
 	var event_type = event.to_string()
-	logger().debug("Broadcasting %s to subscriber" % event_type, "event", event.to_dict())
-	logger().debug("...", "subscription", subscription.to_dict())
+	logger().debug("Broadcasting %s to subscriber" % event_type, "data", {"event": event.to_dict(), "subscription": subscription.to_dict()})
 
 	var callables = []
 

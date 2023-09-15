@@ -76,8 +76,7 @@ func mkdir(path: String, recursive: bool = false):
 		result = DirAccess.make_dir_absolute(path)
 
 	if result != OK:
-		logger().critical("Make directory failed", "path", path)
-		logger().critical("...", "error", result)
+		logger().critical("Make directory failed", "data", {"path": path, "error_no": result})
 
 		return false
 
@@ -89,8 +88,7 @@ func rm(path: String):
 		var result = DirAccess.remove_absolute(path)
 
 		if result != OK:
-			logger().critical("Remove directory failed", "path", path)
-			logger().critical("...", "error", result)
+			logger().critical("Removing directory failed", "data", {"path": path, "error_no": result})
 
 			return false
 
@@ -104,8 +102,7 @@ func mv(from_path: String, to_path: String):
 		var result = DirAccess.rename_absolute(from_path, to_path)
 
 		if result != OK:
-			logger().critical("Rename operation failed", "path", {"from": from_path, "to": to_path})
-			logger().critical("...", "error", result)
+			logger().critical("Rename operation failed", "data", {"from": from_path, "to": to_path, "error_no": result})
 
 			return false
 
@@ -119,8 +116,7 @@ func cp(from_path: String, to_path: String):
 		var result = DirAccess.copy_absolute(from_path, to_path)
 
 		if result != OK:
-			logger().critical("Copy operation failed", "path", {"from": from_path, "to": to_path})
-			logger().critical("...", "error", result)
+			logger().critical("Copy operation failed", "path", {"from": from_path, "to": to_path, "error_no": result})
 
 			return false
 

@@ -55,8 +55,7 @@ func get_file_as_text(skip_cr: bool = true):
 	var file_error = _file_object.get_error()
 
 	if file_error:
-		logger().critical("Get file as text failed", "path", _file_object.get_path())
-		logger().critical("...", "error", file_error)
+		logger().critical("Get file as text failed", "data", {"path": _file_object.get_path(), "error_no": file_error})
 
 		return null
 
