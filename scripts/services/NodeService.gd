@@ -132,7 +132,8 @@ func register_node_groups(node):
 
 # unregister node
 func unregister_node(node_id, node):
-	_nodes.get(node_id).erase(node)
+	if get_registered_node(node_id):
+		_nodes.get(node_id).erase(node)
 
 # get the friendly ID of a node
 func get_node_id(node):
