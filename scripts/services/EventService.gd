@@ -20,7 +20,7 @@ func _init():
 	register_queue(EventQueue.new("instant", 1))
 	register_queue(EventQueue.new("deferred", 2))
 	register_queue(EventQueue.new("fetch", 0))
-	register_queue(EventQueue.new("error", 0))
+	register_queue(EventQueue.new("error", 1))
 
 func init():
 	return self
@@ -113,6 +113,10 @@ func subscribe(subscription: EventSubscription):
 	else:
 		logger().debug("Subscription already registered", "subscription", subscription.to_dict())
 
+		return Result.new(true, ResultError.new(self, "subscription_exists"))
+
+	return Result.new(true)
+
 
 # allow unsubscribing from events
 func unsubscribe(subscriber: Object, event_type = Event):
@@ -153,8 +157,8 @@ func subscribe_signal(connect_object: Object, signal_name: String, subscription:
 	logger().debug("...", "signal", signal_name)
 
 
-	# register the subscription
-	subscribe(subscription)
+	# register the subscription's Result object
+	return subscribe(subscription)
 
 func _on_signal(signal_data = {}, signal_param = null):
 	# hack: if the signal has a param, switch the variables
@@ -216,14 +220,20 @@ func fetch(event_type = Event, event_filters: Array = [], count: int = 1):
 	return get_fetch_queue().fetch(event_type, event_filters, count)
 
 # shortcut to emit an EventError object to the error queue, designed to be fetched after certain operations have failed
-func error(obj: Object, type: String, data = null):
-	if obj.has_method("logger"):
-		obj.logger().error("Error: %s" % type, "data", data)
-	else:
-		Services.Log.get(obj.to_string()).error("Error: %s" % type, "data", data)
+func error(obj: Object, type, data = null, message = ""):
+	var error = ResultError.new(obj, type, data, message)
 
-	# add error event to queue
-	emit(EventError.new(obj, type, data), "error")
+	# log the error
+	if obj.has_method("logger"):
+		obj.logger().error("Error: %s" % error.get_type(), "data", error.get_data())
+	else:
+		Services.Log.get(obj.to_string()).error("Error: %s" % error.get_type(), "data", error.get_data())
+
+	# emit an error event
+	# emit_now(EventError.new(obj, error.get_type(), error.get_data()), "error")
+
+	# return the error object
+	return error
 
 # fetch errors off the error queue
 func get_errors(filters = []):

@@ -33,36 +33,34 @@ func reinit():
 	pass
 
 func load_from_file():
-	var file_content = get_file_as_text()
+	var result = get_file_as_text()
 
-	if not file_content:
-		return null
+	if not result.SUCCESS:
+		return result
+	
+	# get value from result object
+	var file_content = result.value
 
-	# override text file content
+	# parse supported filetypes content
 	if _file_ext == "json":
-		var json = JSON.new()
-		var parsed_json_result = json.parse(file_content)
+		var parse_r = DataEndpointParserJSON.new().parse(file_content, _file_ext)
 
-		if parsed_json_result == OK:
-			file_content = json.data
+		if not parse_r.SUCCESS:
+			return parse_r
 		else:
-			Services.Events.error(self, "parsing_json_failed", {"path": _file_object.get_path(), "error": parsed_json_result, "error_msg": json.get_error_message()})
-
-			return parsed_json_result
+			file_content = parse_r.value
 
 	# return file content
-	return file_content
+	return Result.new(file_content)
 
 func save_to_file(data_resource):
 	if _file_ext == "json":
-		var stringified_json = JSON.stringify(data_resource._data) # is this safe?
+		var unparse_r = DataEndpointParserJSON.new().unparse(data_resource._data, _file_ext)
 
-		if stringified_json:
-			_file_object.store_line(stringified_json)
+		if not unparse_r.SUCCESS:
+			return unparse_r
 		else:
-			Services.Events.error(self, "stringify_json_failed", {"path": _file_object.get_path()})
-
-			return null
+			_file_object.store_line(unparse_r.value)
 
 	# assume it's plain text and store it
 	else:
@@ -71,8 +69,9 @@ func save_to_file(data_resource):
 	var file_error = _file_object.get_error()
 
 	if file_error:
-		Services.Events.error(self, "parsing_json_failed", {"path": _file_object.get_path(), "error": file_error})
+		var error = Services.Events.error(self, file_error, {"path": _file_object.get_path(), "error": file_error})
 
-		return null
+		return Result.new(false, error)
 
-	return true
+	# return true result object
+	return Result.new(true)

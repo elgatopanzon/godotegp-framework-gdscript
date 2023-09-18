@@ -23,6 +23,11 @@ func _init(return_value, error = null):
 func init():
 	return self
 
+func get_error():
+	return _error
+func get_value():
+	return _return_value
+
 # friendly name when printing object
 func _to_string():
 	return "Result"

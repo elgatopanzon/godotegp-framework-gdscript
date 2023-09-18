@@ -71,15 +71,15 @@ func process_file_operation(type: int):
 
 	# file extension not implemented
 	if not extension_implementation:
-		Services.Events.error(self, "unsupported_extension", {"ext": _file_ext, "path": _file_path, "resource": _data_resource})
+		var error = Services.Events.error(self, "unsupported_extension", {"ext": _file_ext, "path": _file_path, "resource": _data_resource})
 
-		return null	
+		return Result.new(false, error)	
 
 	# check if file exists when loading
 	if type == 0 and not FileAccess.file_exists(_file_path):
-		Services.Events.error(self, "file_not_found", {"ext": _file_ext, "path": _file_path, "resource": _data_resource})
+		var error = Services.Events.error(self, "file_not_found", {"ext": _file_ext, "path": _file_path, "resource": _data_resource})
 
-		return null
+		return Result.new(false, error)	
 
 	var file = null
 	if type == 0:
@@ -87,16 +87,20 @@ func process_file_operation(type: int):
 	else:
 		file = get_file_object(FileAccess.WRITE_READ) # write file if it doesn't exist
 
-	# if file is null we cant access the file
-	if not file:
-		Services.Events.error(self, "couldnt_obtain_handle", {"ext": _file_ext, "path": _file_path, "resource": _data_resource})
+	# check the result object for success
+	if not file.SUCCESS:
+		var error = Services.Events.error(self, file.error.get_type(), file.error.get_type())
 
-		return file
+		return Result.new(false, error)	
+	else:
+		# set the file object to the value when there's no errors
+		file = file.value
 
 	# set needed data by extension implementation
 	extension_implementation.set_file_object(file)
 	extension_implementation.set_file_ext(_file_ext)
 
+	# returns upstream result object directly which includes upstream errors
 	if type == 0:
 		var load_result = extension_implementation.load_from_file()
 
@@ -115,7 +119,6 @@ func get_file_object(access_type: int = FileAccess.READ_WRITE):
 	var file = FileAccess.open(_file_path, access_type)
 
 	if file:
-		return file
+		return Result.new(file)
 	else:
-
-		return null
+		return Result.new(false, ResultError.new(self, FileAccess.get_open_error(), {"ext": _file_ext, "path": _file_path, "resource": _data_resource}))

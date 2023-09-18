@@ -21,13 +21,14 @@ func _init(data_resource_type):
 
 func init(loaded_data = null):
 	if typeof(loaded_data) != TYPE_ARRAY:
-		Services.Events.error(self, "array_expected", {"loaded_data": loaded_data})
+		var error = Services.Events.error(self, "data_resource_array_expected", {"loaded_data": loaded_data})
 
-		return false
+		return Result.new(false, error)
 	else:
+		# get Result object for the resource creation process from array of items
 		return create_resource_objects(loaded_data)
 
-	return self
+	return Result.new(self)
 
 # friendly name when printing object
 func _to_string():
@@ -75,14 +76,15 @@ func reinit():
 # create resource objects from the array of data items
 func create_resource_objects(loaded_data: Array):
 	for data in loaded_data:
-		var resource = _data_resource_type.new().init(data)
+		var result = _data_resource_type.new().init(data)
 
 		# if we get back a valid resource then the loaded data is valid
-		if resource:
-			_data.append(resource)
+		if result.SUCCESS:
+			_data.append(result.value)
 		else:
-			Services.Events.error(self, "resource_object_creation_failed", {"resource_type": _data_resource_type.get_script().get_path().replace(".gd", ""), "data": data})
+			var error = Services.Events.error(self, "data_resource_validation_failed", {"resource_type": _data_resource_type.get_script().get_path().replace(".gd", ""), "data": data})
 
-			return null
+			return result
 
-	return self
+	# return Result object
+	return Result.new(self)

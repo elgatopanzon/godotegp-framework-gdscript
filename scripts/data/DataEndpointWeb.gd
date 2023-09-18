@@ -104,23 +104,23 @@ func process_web_operation(type: int):
 
 	# content type not implemented
 	if not content_parser:
-		Services.Events.error(self, "content_type_unsupported", {"url": _url, "content_type": _content_type})
+		var error = Services.Events.error(self, "content_type_unsupported", {"url": _url, "content_type": _content_type})
 
-		return null	
+		return Result.new(false, error)	
 
 	# make sure we can connect to the host
 	var connect_error = verify_connection()
 	if not connect_error == OK:
-		Services.Events.error(self, "connect_to_host_init_failed", {"url": _url, "error": connect_error})
+		var error = Services.Events.error(self, connect_error + 1000, {"url": _url, "error": connect_error})
 
-		return null
+		return Result.new(false, error)	
 
 	await init_connect()
 
 	if _http.get_status() != HTTPClient.STATUS_CONNECTED:
-		Services.Events.error(self, "connect_to_host_failed", {"url": _url, "http_status": _http.get_status})
+		var error = Services.Events.error(self, _http.get_status(), {"url": _url, "http_status": _http.get_status})
 
-		return null
+		return Result.new(false, error)	
 
 	# make the request if the connection succeeded
 	var headers = [
@@ -134,7 +134,13 @@ func process_web_operation(type: int):
 	if _request_method == "POST":
 		method = HTTPClient.METHOD_POST
 
-		request_body = content_parser.unparse(_data_resource.to_dict(), _content_type)
+		var result = content_parser.unparse(_data_resource.to_dict(), _content_type)
+
+		if not result.SUCCESS:
+			result.error.get_data()["url"] = _url
+			return result
+		else:
+			request_body = result.value
 	if _request_method == "PUT":
 		method = HTTPClient.METHOD_PUT
 
@@ -145,14 +151,14 @@ func process_web_operation(type: int):
 	var request_success = (_http.get_status() == HTTPClient.STATUS_BODY or _http.get_status() == HTTPClient.STATUS_CONNECTED)
 
 	if not request_success:
-		Services.Events.error(self, "connect_to_host_failed", {"url": _url, "path": _url_path, "http_status": _http.get_status})
+		var error = Services.Events.error(self, _http.get_status(), {"url": _url, "http_status": _http.get_status})
 
-		return null
+		return Result.new(false, error)	
 
 	if not _http.has_response() and type == 0: # error if we're trying to load data
-		Services.Events.error(self, "http_response_expected", {"url": _url, "path": _url_path, "http_status": _http.get_status})
+		var error = Services.Events.error(self, _http.get_status(), {"url": _url, "http_status": _http.get_status})
 
-		return null
+		return Result.new(false, error)	
 
 	# get the data from the response
 	var rb = PackedByteArray() # Array that will hold the data.
@@ -173,14 +179,15 @@ func process_web_operation(type: int):
 	logger().debug("HTTP request response body", "body", text_response)
 
 	# saving or loading, HTTP response matters to verify if the save was successful
-	var parsed_content = content_parser.parse(text_response, _content_type)
+	var parse_res = content_parser.parse(text_response, _content_type)
 
-	if parsed_content == null:
-		Services.Events.error(self, "parsing_request_body_failed", {"url": _url, "path": _url_path, "body": text_response})
+	if not parse_res.SUCCESS:
+		parse_res.error.get_data()["url"] = _url
+		return parse_res
 
-		return null
+	var parsed_content = parse_res.value
 	
-	return parsed_content
+	return Result.new(parsed_content)
 
 
 func verify_connection():

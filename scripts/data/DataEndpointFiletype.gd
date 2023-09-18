@@ -55,8 +55,8 @@ func get_file_as_text(skip_cr: bool = true):
 	var file_error = _file_object.get_error()
 
 	if file_error:
-		Services.Events.error(self, "failed_getting_file_text", {"path": _file_object.get_path(), "error_no": file_error})
+		var error = Services.Events.error(self, file_error, {"path": _file_object.get_path()})
 
-		return null
+		return Result.new(false, error)
 
-	return file_content
+	return Result.new(file_content)

@@ -12,12 +12,16 @@ extends DataEndpoint
 
 var _dir_path: String
 var _dir_object: DirAccess
+var _dir_open_error: ResultError
 
 # object constructor
 func _init(dir_path: String):
 	_dir_path = dir_path
 
 	_dir_object = DirAccess.open(_dir_path)
+
+	if not _dir_object:
+		_dir_open_error = ResultError.new(self, DirAccess.get_open_error(), {"path": _dir_path})
 
 func init():
 	return self
@@ -43,7 +47,7 @@ func reinit():
 
 # check if valid
 func is_valid():
-	return _dir_object
+	return _dir_open_error == null # if there's no open error, it's valid
 
 # walk a directory and return a nested dict
 # BUGGED CAUSES CRASHES
@@ -83,20 +87,28 @@ func walk(path: String = _dir_path, recursive: int = true, directory_contents = 
 
 # list contents of directory
 func list():
-	return _dir_object.get_directories() + _dir_object.get_files()
+	# returns the open error if one was generated
+	if _dir_open_error:
+		var error = ResultError.new(self, "list_directory_error", {"path": _dir_path})
+		error.add_error(_dir_open_error)
+		return Result.new(false, error)
+	else:
+		return Result.new(_dir_object.get_directories() + _dir_object.get_files())
 
 # check file or dir exists
 func exists():
-	if _dir_object.file_exists(_dir_path):
-		return true
+	if _dir_open_error:
+		var error = ResultError.new(self, "directory_exists_error", {"path": _dir_path})
+		error.add_error(_dir_open_error)
+		return Result.new(false, error)
 
-	if _dir_object.dir_exists(_dir_path):
-		return true
-
-	return false
+	# return result object with value
+	return Result.new(_dir_object.file_exists(_dir_path) or _dir_object.dir_exists(_dir_path))
 
 func isdir():
-	if _dir_object.dir_exists(_dir_path):
-		return true
+	if _dir_open_error:
+		var error = ResultError.new(self, "is_directory_error", {"path": _dir_path})
+		error.add_error(_dir_open_error)
+		return Result.new(false, error)
 
-	return false
+	return Result.new(_dir_object.dir_exists(_dir_path))

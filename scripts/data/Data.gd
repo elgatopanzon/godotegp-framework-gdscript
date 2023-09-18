@@ -53,14 +53,16 @@ func load_data():
 
 	var loaded_data = get_data_endpoint().load_data()
 
-	if loaded_data:
-		return get_data_resource().init(loaded_data)
+	# for the most part, we can pass up the errors
+	if loaded_data.SUCCESS:
+		return get_data_resource().init(loaded_data.value)
 	else:
-		Services.Events.error(self, "data_loading_failed", {"endpoint": get_data_endpoint().to_dict(), "resource": get_data_resource(), "error": loaded_data})
+		var error = Services.Events.error(self, "data_loading_failed", {"endpoint": get_data_endpoint().to_dict(), "resource": get_data_resource(), "error": loaded_data.error.to_dict()})
 
-		# TODO: handle upstream errors here
+		# add upstream errors to our local error
+		error.add_error(loaded_data.error)
 
-		return null # failed somewhere loading the data, handle it better
+		return Result.new(false, error)
 
 # save function executes the saving operation
 func save_data():
@@ -71,9 +73,14 @@ func save_data():
 
 	var save_result = get_data_endpoint().save_loaded_resource()
 
-	if not save_result:
-		Services.Events.error(self, "data_writing_failed", {"endpoint": get_data_endpoint().to_dict(), "resource": get_data_resource(), "error": save_result})
+	# for the most part, we can pass up the errors
+	if not save_result.SUCCESS:
+		var error = Services.Events.error(self, "data_writing_failed", {"endpoint": get_data_endpoint().to_dict(), "resource": get_data_resource(), "error": save_result.error.to_dict()})
 
-		# TODO: handle upstream errors here
+		# add upstream errors to our local error
+		error.add_error(save_result.error)
 
+		return Result.new(false, error)
+
+	# return the Result object
 	return save_result

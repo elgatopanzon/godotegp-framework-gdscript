@@ -36,12 +36,20 @@ func reinit():
 	pass
 
 func load_from_file():
-	var load_error = _config_object.parse(get_file_as_text())
+	var result = get_file_as_text()
+
+	if not result.SUCCESS:
+		return result
+	
+	# get value from result object
+	var file_content = result.value
+
+	var load_error = _config_object.parse(file_content)
 
 	if load_error != OK:
-		Services.Events.error(self, "error_parsing_content", {"file": _file_object.get_path(), "error": load_error})
+		var error = Services.Events.error(self, load_error, {"file": _file_object.get_path(), "error": load_error})
 
-		return null
+		return Result.new(false, error)
 
 	# parse sections into dict
 	var parsed_dict = {}
@@ -52,9 +60,9 @@ func load_from_file():
 		if not parsed_dict.get(section):
 			parsed_dict[section] = {}
 		else:
-			Services.Events.error(self, "duplicate_section_found", {"file": _file_object.get_path(), "section": section})
+			var error = Services.Events.error(self, "duplicate_section_found", {"file": _file_object.get_path(), "section": section})
 
-			return null
+			return Result.new(false, error)
 
 		for key in keys:
 			var value = _config_object.get_value(section, key, null)
@@ -62,12 +70,16 @@ func load_from_file():
 			parsed_dict[section][key] = value
 
 			
-	return parsed_dict
+	return Result.new(parsed_dict)
 
 # only supports dict resources with 1 level deep
 func save_to_file(data_resource: DataResource):
 	var data = data_resource.to_dict()
 
+	if typeof(data) != TYPE_DICTIONARY:
+		return Result.new(false, ResultError.new(self, "data_resource_invalid_dict", {"data": data}))
+
+	# loop over sections
 	for section_name in data:
 		var section_name_value = data[section_name]
 		
@@ -80,8 +92,8 @@ func save_to_file(data_resource: DataResource):
 	var save_error = _config_object.save(_file_object.get_path())
 
 	if save_error != OK:
-		Services.Events.error(self, "error_writing_content", {"file": _file_object.get_path(), "error": save_error})
+		var error = Services.Events.error(self, save_error, {"file": _file_object.get_path(), "error": save_error})
 
-		return null
+		return Result.new(false, error)
 
-	return true
+	return Result.new(true)

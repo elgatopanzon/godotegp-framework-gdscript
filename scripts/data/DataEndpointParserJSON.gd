@@ -41,12 +41,12 @@ func parse(content: String, content_type: String):
 		if parsed_json_result == OK:
 			content_parsed = json.data
 		else:
-			Services.Events.error(self, "parsing_failed", {"content": content, "error": json.get_error_message()})
+			var error = Services.Events.error(self, parsed_json_result, {"content": content, "line": json.get_error_line()}, json.get_error_message())
 
-			return null
+			return Result.new(false, error)
 
 	# return parsed content
-	return content_parsed
+	return Result.new(content_parsed)
 
 func unparse(content, content_type: String):
 	var unparsed_content = ""
@@ -57,8 +57,8 @@ func unparse(content, content_type: String):
 		if stringified_json:
 			unparsed_content = stringified_json
 		else:
-			Services.Events.error(self, "stringify_failed", {"content": content})
+			var error = Services.Events.error(self, "json_stringify_failed", {"content": content})
 
-			return null
+			return Result.new(false, error)
 
-	return unparsed_content
+	return Result.new(unparsed_content)

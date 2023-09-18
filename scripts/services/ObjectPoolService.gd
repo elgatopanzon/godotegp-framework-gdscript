@@ -63,6 +63,7 @@ func get_object_pool(class_instance_name):
 		# if we instanced a valid pool, register it
 		if object_pool_instance:
 			register_object_pool(object_pool_instance, class_instance_name)
+
 	return object_pool_instance
 
 # set the ObjectPool instance for the class name
@@ -117,3 +118,5 @@ func create_object_pool_instance(class_instance_name: String):
 			logger().warning("Not a valid class instance", "class", class_instance_name)
 
 			return null
+
+	return false

@@ -73,15 +73,15 @@ func init(loaded_data = null):
 			var result = validate_data()
 
 			if not result:
-				Services.Events.error(self, "validation_failed")
+				var error = Services.Events.error(self, "validation_failed")
+
+				error.add_error(result.error)
 
 				_data = null # clear it all, it's not valid
 
-				return null
-			else:
-				return self
+				return Result.new(false, error)
 
-	return self
+	return Result.new(self)
 
 # friendly name when printing object
 func _to_string():
@@ -139,7 +139,7 @@ func merge_resource(resource: DataResource):
 	if not has_schema():
 		_data = resource._data
 
-		return true
+		return Result.new(true)
 	else:
 		return process_resource_merge(resource, _data_schema, _data, resource._data)
 
@@ -186,6 +186,7 @@ func schema_add_property(id: String, property_data: Dictionary, schema_object: D
 				property_data[key] = property_data_clone[key]
 
 	schema_object['properties'][id] = property_data
+
 	return schema_object['properties'][id]
 
 # set key and value on schema object
@@ -213,6 +214,7 @@ func validate_schema_level(schema_level: Dictionary = _data_schema, data = _data
 	if schema_level.get("callable", null):
 		valid = schema_level['callable'].call(schema_level, data)
 
+		# callable must return Result object
 		return valid
 
 	# if type was an object, load the data into the class's created instance
@@ -220,28 +222,30 @@ func validate_schema_level(schema_level: Dictionary = _data_schema, data = _data
 		if typeof(data) != TYPE_OBJECT:
 			var instance = schema_init_empty_value(schema_level)
 
-			if not instance:
-				Services.Events.error(self, "schema_object_invalid_class", {"schema": schema_level, "data": data})
-				valid = false
+			if not instance.SUCCESS:
+				var error = Services.Events.error(self, "schema_object_invalid_class", {"schema": schema_level, "data": data})
+
+				error.add_error(instance.error)
+
+				return Result.new(false, error)
 			else:
 				var valid_instance = instance.instantiate().init(data)
 
-				if valid_instance:
-					data = valid_instance
+				if valid_instance.SUCCESS:
+					data = valid_instance.value
 					
 					valid = true
 				else:
-					Services.Events.error(self, "schema_object_validation_failed", {"schema": schema_level, "data": data})
+					var error = Services.Events.error(self, "schema_object_validation_failed", {"schema": schema_level, "data": data})
+					error.add_error(valid_instance.error)
 					valid = false
-
-		if not valid:
-			return false
+					return Result.new(false, error)
 
 	# validate the type
 	valid = schema_validate_type(schema_level, data)
 
-	if not valid:
-		return false
+	if not valid.SUCCESS:
+		return valid
 
 	# validate properties for type dict
 	if schema_level['type'] == "dict":
@@ -251,22 +255,17 @@ func validate_schema_level(schema_level: Dictionary = _data_schema, data = _data
 	elif schema_level['type'] == "array":
 		valid = schema_validate_items(schema_level, data)
 
-
-	# note: create instance first, then assign data and then validate
-	elif schema_level['type'] == "object":
-		pass
-
-	if not valid:
-		return false
+	if not valid.SUCCESS:
+		return valid
 
 	# validate the value itself
 	logger().debug("Schema value constraints: starting", "data", {"schema": schema_level, "data": data})
 	valid = schema_validate_constraints(schema_level, data)
 
-	if not valid:
-		return false
+	if not valid.SUCCESS:
+		return valid
 
-	return valid
+	return Result.new(true)
 
 func schema_validate_type(schema_level: Dictionary = _data_schema, data = _data):
 	var valid = false
@@ -295,15 +294,19 @@ func schema_validate_type(schema_level: Dictionary = _data_schema, data = _data)
 			Services.ObjectPool.get_object_pool(schema_level['object']).return_instance(expected_instance)
 			
 		if not valid:
-			Services.Events.error(self, "schema_type_mismatch", {"type": schema_level['type'], "actual_type": schema_get_type_string(typeof(data)), "data": data})
+			var error = Services.Events.error(self, "schema_type_mismatch", {"type": schema_level['type'], "actual_type": schema_get_type_string(typeof(data)), "data": data})
+
+			return Result.new(false, error)
 
 	else:
-		Services.Events.error(self, "schema_uncaught_type", {"type": schema_level['type'], "actual_type": schema_get_type_string(typeof(data)), "data": data})
+		var error = Services.Events.error(self, "schema_uncaught_type", {"type": schema_level['type'], "actual_type": schema_get_type_string(typeof(data)), "data": data})
+
+		return Result.new(false, error)
 
 
 	logger().debug("Schema type: result", "result", valid)
 
-	return valid
+	return Result.new(valid)
 
 func schema_validate_properties(schema_level: Dictionary, data = _data):
 	var valid = false
@@ -330,9 +333,9 @@ func schema_validate_properties(schema_level: Dictionary, data = _data):
 			var default_value = schema_level['properties'][property].get("default", null)
 
 			if required:
-				Services.Events.error(self, "schema_required_property_missing", {"property": property})
+				var error = Services.Events.error(self, "schema_required_property_missing", {"property": property})
 
-				invalid_properties.append(property)
+				invalid_properties.append(error)
 
 			elif default_value:
 				data[property] = default_value
@@ -349,18 +352,20 @@ func schema_validate_properties(schema_level: Dictionary, data = _data):
 		if property not in invalid_properties:
 			var property_valid = validate_schema_level(schema_level['properties'][property], data.get(property, null))
 
-			if not property_valid:
-				invalid_properties.append(property)
+			if not property_valid.SUCCESS:
+				invalid_properties.append(property_valid.error)
 
 	if invalid_properties.size():		
-		Services.Events.error(self, "schema_properties_invalid", {"properties": invalid_properties})
+		var error = Services.Events.error(self, "schema_properties_invalid", {"properties": invalid_properties})
+
+		return Result.new(false, error)
 
 	else:
 		valid = true
 
 	logger().debug("Schema property: result", "result", valid)
 
-	return valid
+	return Result.new(valid)
 
 func schema_init_empty_value(schema_level: Dictionary):
 	if schema_level['type'] == "array":
@@ -381,18 +386,20 @@ func schema_validate_items(schema_level: Dictionary, data = _data):
 
 		var item_valid = validate_schema_level(schema_level['items'], item)
 
-		if not item_valid:
-			invalid_items.append(item)
+		if not item_valid.SUCCESS:
+			invalid_items.append(item_valid.error)
 
 	if invalid_items.size():		
-		Services.Events.error(self, "schema_items_invalid", {"items": invalid_items})
+		var error = Services.Events.error(self, "schema_items_invalid", {"items": invalid_items})
+
+		return Result.new(true, error)
 
 	else:
 		valid = true
 
 	logger().debug("Schema item: result", "result", valid)
 
-	return valid
+	return Result.new(valid)
 
 func schema_validate_constraints(schema_level: Dictionary, data = _data):
 	var valid = true
@@ -427,19 +434,18 @@ func schema_validate_constraints(schema_level: Dictionary, data = _data):
 				
 			# if one constraint doesn't match, break
 			if not valid:
-				Services.Events.error(self, "schema_value_constraint_failed", {"constraint": {"type": constraint, "value": schema_level[constraint]}, "data": data})
-				break
+				var error = Services.Events.error(self, "schema_value_constraint_failed", {"constraint": {"type": constraint, "value": schema_level[constraint]}, "data": data})
 
+				return Result.new(false, error)
 
-	return valid
-
-
+	return Result.new(valid)
 
 func schema_get_type_string(type_value):
 	for type in TYPE_STRING_MAPPINGS:
 		if TYPE_STRING_MAPPINGS[type] == type_value:
 			return type
 
+	return false
 
 # move through the scheme recursively and merge them
 func process_resource_merge(resource: DataResource, schema_level: Dictionary = _data_schema, data = _data, data_resource = null):
@@ -449,20 +455,23 @@ func process_resource_merge(resource: DataResource, schema_level: Dictionary = _
 	if schema_level['type'] == "dict":
 		for property in schema_level['properties']:
 			if schema_level['properties'][property]['type'] == "dict":
-				process_resource_merge(resource, schema_level['properties'][property], data.get(property), data_resource.get(property))
+				var result = process_resource_merge(resource, schema_level['properties'][property], data.get(property), data_resource.get(property))
+
+				if not result.SUCCESS:
+					return result
 			else:
 				# override value if the data_resource value is different to the default
 				var default = schema_level['properties'][property].get("default", null)
 				if data_resource[property] != default and default != null:
 					data[property] = data_resource[property]
 
-		return true
+		return Result.new(true)
 
 	# overwrite values
 	else:
 		data = data_resource
 
-	return data
+	return Result.new(data)
 
 # allow getting values of a dict or array
 func _get(prop):
@@ -474,8 +483,15 @@ func _get(prop):
 func _set(prop, value):
 	if _data_schema['type'] == "dict":
 		_data[prop] = value
+
+		return true
 	elif _data_schema['type'] == "array":
 		_data[prop] = value
+
+		return true
+	else:
+		return false
+	
 
 # get data object from schema defaults
 func data_from_schema(schema_level: Dictionary = _data_schema, data = {}):

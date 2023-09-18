@@ -33,38 +33,59 @@ func reinit():
 
 # shortcuts to directory operations using DataEndpointDir
 func get_data_endpoint_dir(path: String):
+	# create an endpoint with the given path
 	var endpoint = Services.ObjectPool.DataEndpointDir.instantiate([path])
 
-	if not endpoint.is_valid():
-		return false
-	else:
-		return endpoint
+	return endpoint
 
 # list contents of directory
 func ls(path: String, include_hidden: bool = true):
+	if dir_exists(path).value == false:
+		return Result.new(false, ResultError.new(self, "dir_not_found", {"path": path}))
+
 	var endpoint = get_data_endpoint_dir(path)
 
-	if not endpoint:
-		return false
+	if not endpoint.is_valid():
+		var error = ResultError.new(self, "endpoint_error", {"path": path, "method": "ls"})
+		error.add_error(endpoint._dir_open_error)
+		return Result.new(false, error)
 
 	endpoint._dir_object.include_hidden = include_hidden
 
+	# returns upstream Result object
 	return endpoint.list()
 
 # check if file or dir exists
 func exists(path: String):
 	if FileAccess.file_exists(path):
-		return true
+		return Result.new(true)
 
-	return isdir(path)
+	if DirAccess.dir_exists_absolute(path):
+		return Result.new(true)
+
+	return Result.new(false)
+
+func dir_exists(path: String):
+	if not FileAccess.file_exists(path) and DirAccess.dir_exists_absolute(path):
+		return Result.new(true)
+
+	return Result.new(false)
+
 
 func isdir(path: String):
-	var endpoint = get_data_endpoint_dir(path)
+	if dir_exists(path).value == true and exists(path).value == true:
+		return Result.new(true)
+	else:
+		return Result.new(false)
 
-	if not endpoint:
-		return false
-
-	return endpoint.isdir()
+	# var endpoint = get_data_endpoint_dir(path)
+	#
+	# if not endpoint.is_valid():
+	# 	var error = ResultError.new(self, "endpoint_error", {"path": path, "method": "isdir"})
+	# 	error.add_error(endpoint._dir_open_error)
+	# 	return Result.new(false, error)
+	#
+	# return endpoint.isdir()
 
 # make directory
 func mkdir(path: String, recursive: bool = false):
@@ -76,50 +97,41 @@ func mkdir(path: String, recursive: bool = false):
 		result = DirAccess.make_dir_absolute(path)
 
 	if result != OK:
-		Services.Events.error(self, "create_failed", {"path": path, "error_no": result})
+		var error = Services.Events.error(self, result, {"path": path, "error_no": result})
 
-		return false
+		return Result.new(false, error)
 
-	return true
+	return Result.new(true)
 
 # remove directory or file
 func rm(path: String):
-	if exists(path):
-		var result = DirAccess.remove_absolute(path)
+	var result = DirAccess.remove_absolute(path)
 
-		if result != OK:
-			Services.Events.error(self, "removal_failed", {"path": path, "error_no": result})
+	if result != OK:
+		var error = Services.Events.error(self, result, {"path": path, "error_no": result})
 
-			return false
+		return Result.new(false, error)
 
-		return true
-	else:
-		return false
+	return Result.new(true)
 
 # rename directory or file to another name
 func mv(from_path: String, to_path: String):
-	if exists(from_path):
-		var result = DirAccess.rename_absolute(from_path, to_path)
+	var result = DirAccess.rename_absolute(from_path, to_path)
 
-		if result != OK:
-			Services.Events.error(self, "rename_failed", {"from": from_path, "to": to_path, "error_no": result})
+	if result != OK:
+		var error = Services.Events.error(self, result, {"from": from_path, "to": to_path, "error_no": result})
 
-			return false
+		return Result.new(false, error)
 
-		return true
-	else:
-		return false
+	return Result.new(true)
 
 # copy directory or file to another location
 func cp(from_path: String, to_path: String):
-	if exists(from_path) and not isdir(from_path):
-		var result = DirAccess.copy_absolute(from_path, to_path)
+	var result = DirAccess.copy_absolute(from_path, to_path)
 
-		if result != OK:
-			Services.Events.error(self, "copy_failed", {"from": from_path, "to": to_path, "error_no": result})
+	if result != OK:
+		var error = Services.Events.error(self, "copy_failed", {"from": from_path, "to": to_path, "error_no": result})
 
-			return false
+		return Result.new(false, error)
 
-		return true
-	else:
-		return false
+	return Result.new(true)

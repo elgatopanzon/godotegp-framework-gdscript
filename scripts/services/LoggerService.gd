@@ -116,6 +116,9 @@ func register_logger(logger, group_id):
 			for existing_logger in _logger_collections[logger]._loggers:
 				_logger_collections[group_id].add_logger(existing_logger)
 
+	else:
+		return false
+
 # deregister a Logger from a group
 func deregister_logger(logger: Logger, group_id: String):
 	return _logger_collections[group_id].remove_logger(logger)

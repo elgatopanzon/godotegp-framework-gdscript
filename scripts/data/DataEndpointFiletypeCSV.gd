@@ -63,7 +63,7 @@ func load_from_file():
 
 		line_counter += 1
 	
-	return parsed_csv
+	return Result.new(parsed_csv)
 
 
 func save_to_file(data_resource: DataResource):
@@ -74,4 +74,5 @@ func save_to_file(data_resource: DataResource):
 	# extract data values by heading key for each line
 	# store the csv lines (force saving with quotes and escaping)
 
-	return null # for now, we won't support saving CSV until we need to
+
+	return Result.new(false) # for now, we won't support saving CSV until we need to
