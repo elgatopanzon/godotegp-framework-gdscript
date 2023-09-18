@@ -20,7 +20,7 @@ func _init():
 	register_queue(EventQueue.new("instant", 1))
 	register_queue(EventQueue.new("deferred", 2))
 	register_queue(EventQueue.new("fetch", 0))
-	register_queue(EventQueue.new("error", 1))
+	register_queue(EventQueue.new("error", 0))
 
 func init():
 	return self
@@ -230,7 +230,7 @@ func error(obj: Object, type, data = null, message = ""):
 		Services.Log.get(obj.to_string()).error("Error: %s" % error.get_type(), "data", error.get_data())
 
 	# emit an error event
-	# emit_now(EventError.new(obj, error.get_type(), error.get_data()), "error")
+	emit(EventError.new(obj, error.get_type(), error.get_data()), "error")
 
 	# return the error object
 	return error
