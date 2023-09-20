@@ -11,11 +11,28 @@ class_name DataResourceConfigEngine
 extends DataResource
 
 const ALLOWED_COLORS = ["black", "red", "green", "yellow", "blue", "magenta", "pink", "purple", "cyan", "white", "orange", "gray"]
+const ALLOWED_LOG_LEVELS = ["debug", "none", "info", "warning", "error", "critical"]
 
 # object constructor
 func _init():
 	schema_set_type("dict") # expected data is a dict
 
+	# config for logger_console LoggerDestinationConfig
+	var prop_logger = schema_add_property("logger", {
+		"type": "dict",
+	})
+
+	schema_add_property("log_level_debug", {
+		"type": "string",
+		"default": "debug",
+		"allowed_values": ALLOWED_LOG_LEVELS,
+	}, prop_logger)
+	schema_add_property("log_level_release", {
+		"prototype": "log_level_debug",
+		"default": "info",
+	}, prop_logger)
+
+	# config for logger_console LoggerDestinationConfig
 	var prop_ldc = schema_add_property("logger_console", {
 		"type": "dict",
 	})
