@@ -35,8 +35,10 @@ func _init():
 	for service in _services:
 		Services.register_service(_services[service].new(), service)
 
-	# set default log level
-	Services.Log.set_default_log_level("debug")
+	# set default log level from config
+	var log_level = Services.Config.ConfigEngine.get("logger").get("log_level_%s" % Services.System.build_type)
+
+	Services.Log.set_default_log_level(log_level)
 
 	# # logging test using self as group
 	# Services.Log.register_logger("default", self)
