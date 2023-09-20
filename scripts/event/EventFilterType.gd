@@ -28,6 +28,7 @@ func get_broadcast_method_string():
 
 # integration with Services.Log
 func logger():
+	Services.Log.get(self.to_string()).set_level("warning")
 	return Services.Log.get(self.to_string())
 
 # used by ObjectPool

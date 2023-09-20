@@ -37,6 +37,7 @@ func _to_string():
 	return "EventQueue [%s]" % [_name]
 
 func logger():
+	Services.Log.get(self.to_string()).set_level("warning")
 	return Services.Log.get(self.to_string())
 
 # used by ObjectPool
