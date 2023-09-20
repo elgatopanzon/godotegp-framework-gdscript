@@ -19,6 +19,12 @@ func _init():
 	_system_objects["Engine"] = Engine
 	_system_objects["Performance"] = Performance
 
+	# set the build_type to release or debug
+	_system_objects['build_type'] = "release"
+	if self.OS.is_debug_build():
+		_system_objects['build_type'] = "debug"
+
+
 func init():
 	return self
 
