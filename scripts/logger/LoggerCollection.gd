@@ -27,7 +27,10 @@ var _queue_enabled: bool = false
 
 # object constructor
 func _init(level: String = "debug"):
-	set_level(level)
+	if OS.is_debug_build():
+		set_level("debug")
+	else:
+		set_level("info")
 
 func set_name(name):
 	_name = name

@@ -47,6 +47,15 @@ func _to_string():
 
 func set_default_log_level(level: String):
 	_default_log_level = level
+func get_default_log_level():
+	return _default_log_level
+
+# set log level on all logger collections
+func set_log_level(level: String):
+	logger().info("Log level set", "level", level)
+
+	for lc in _logger_collections:
+		_logger_collections[lc].set_level(level)
 
 # object destructor
 # func _notification(what):

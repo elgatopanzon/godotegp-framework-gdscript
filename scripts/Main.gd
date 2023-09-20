@@ -38,10 +38,6 @@ func _init():
 	for service in _services:
 		Services.register_service(_services[service].new(), service)
 
-	# set default log level from config
-	var log_level = Services.Config.ConfigEngine.get("logger").get("log_level_%s" % Services.System.build_type)
-
-	Services.Log.set_default_log_level(log_level)
 
 	# # logging test using self as group
 	# Services.Log.register_logger("default", self)
@@ -141,4 +137,12 @@ func _init():
 
 # perform functionality on service being registered
 func _on_service_registered(service: Service):
-	pass
+	if Services.get_service("Config") and Services.get_service("Log") and Services.get_service("System"):
+		# set default log level from config if it doesn't match
+		var log_level = Services.Config.ConfigEngine.get("logger").get("log_level_%s" % Services.System.build_type)
+
+		if Services.Log.get_default_log_level() != log_level:
+			logger().info("Setting log level from config", "level", log_level)
+
+			Services.Log.set_default_log_level(log_level)
+			Services.Log.set_log_level(log_level)
