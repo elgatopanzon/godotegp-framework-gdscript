@@ -37,7 +37,7 @@ func _to_string():
 	return "EventQueue [%s]" % [_name]
 
 func logger():
-	Services.Log.get(self.to_string()).set_level("warning")
+	# Services.Log.get(self.to_string()).set_level("warning")
 	return Services.Log.get(self.to_string())
 
 # used by ObjectPool
@@ -183,9 +183,10 @@ func broadcast_event(event: Event, subscription: EventSubscription):
 	method_string_parts.append(event.get_broadcast_method_string())
 
 	for event_filter in subscription._event_filters:
-		var filter_method_string = event_filter.get_broadcast_method_string()
-		if filter_method_string:
-			method_string_parts.append(filter_method_string)
+		if event_filter.has_method("get_broadcast_method_string"):
+			var filter_method_string = event_filter.get_broadcast_method_string()
+			if filter_method_string:
+				method_string_parts.append(filter_method_string)
 
 	var method_string = "_on_%s" % ["__".join(method_string_parts)]
 
