@@ -61,7 +61,7 @@ func _init():
 
 # take the loaded data and validate it, called usually by the Data object during loading
 func init(loaded_data = null):
-	if not loaded_data:
+	if loaded_data == null:
 		loaded_data = _data
 
 	# directly set data when there's no schema
@@ -72,7 +72,7 @@ func init(loaded_data = null):
 			# set and validate the data
 			var result = validate_data()
 
-			if not result:
+			if not result.SUCCESS:
 				var error = Services.Events.error(self, "validation_failed")
 
 				error.add_error(result.error)
@@ -163,6 +163,9 @@ func schema_set_default(default, schema_object: Dictionary = _data_schema):
 func schema_set_items(items: Dictionary, schema_object: Dictionary = _data_schema):
 	schema_object['items'] = items
 
+func schema_set_object_type(object_type: String, schema_object: Dictionary = _data_schema):
+	schema_object['object'] = object_type
+
 func schema_set_properties(properties: Dictionary, schema_object: Dictionary = _data_schema):
 	schema_object['properties'] = properties
 
@@ -220,9 +223,12 @@ func validate_schema_level(schema_level: Dictionary = _data_schema, data = _data
 	# if type was an object, load the data into the class's created instance
 	if schema_level['type'] == "object":
 		if typeof(data) != TYPE_OBJECT:
+			return Result.new(false, ResultError.new(self, "instance_not_valid"))
+
+			# TODO: fix this and create suitable tests
 			var instance = schema_init_empty_value(schema_level)
 
-			if not instance.SUCCESS:
+			if instance == null:
 				var error = Services.Events.error(self, "schema_object_invalid_class", {"schema": schema_level, "data": data})
 
 				error.add_error(instance.error)
@@ -275,10 +281,7 @@ func schema_validate_type(schema_level: Dictionary = _data_schema, data = _data)
 	# validate using typeof
 	if schema_level['type'] in TYPE_STRING_MAPPINGS:
 		# cast to the expected number type if it's a valid number
-		if typeof(data) in [TYPE_INT, TYPE_FLOAT]:
-			if schema_level['type'] == "int":
-				data = int(data)
-			if schema_level['type'] == "float":
+		if typeof(data) == TYPE_FLOAT and schema_level['type'] == "int":
 				data = int(data)
 
 		valid = typeof(data) == TYPE_STRING_MAPPINGS[schema_level['type']]
@@ -368,14 +371,27 @@ func schema_validate_properties(schema_level: Dictionary, data = _data):
 	return Result.new(valid)
 
 func schema_init_empty_value(schema_level: Dictionary):
+	var default_value = schema_level.get("default", null)
+
 	if schema_level['type'] == "array":
-		return []
-	if schema_level['type'] == "dict":
-		return {}
+		if default_value:
+			return default_value
+		else:
+			return []
+	elif schema_level['type'] == "dict":
+		if default_value:
+			return default_value
+		else:
+			return {}
 
 	# return a fresh instance of the object
-	if schema_level['type'] == "object":
+	elif schema_level['type'] == "object":
 		return Services.ObjectPool.get_object_pool(schema_level['object'])
+
+	# init the value from the defult if there is one
+	else:
+		if default_value != null:
+			return default_value
 
 func schema_validate_items(schema_level: Dictionary, data = _data):
 	var valid = false
@@ -404,7 +420,7 @@ func schema_validate_items(schema_level: Dictionary, data = _data):
 func schema_validate_constraints(schema_level: Dictionary, data = _data):
 	var valid = true
 
-	for constraint in ['min_value', 'max_value', 'min_length', 'max_length', 'allowed_values', 'unique']:
+	for constraint in ['min_value', 'max_value', 'min_length', 'max_length', 'min_items', 'max_items', 'allowed_values', 'unique']:
 		if constraint in schema_level:
 			logger().debug("Schema value constraints: validating", "validation", {"constraint": {"type": constraint, "value": schema_level[constraint]}, "data": data})
 
@@ -418,8 +434,22 @@ func schema_validate_constraints(schema_level: Dictionary, data = _data):
 			elif constraint == "max_length":
 				valid = (len(data) <= schema_level[constraint])
 
+			if constraint == "min_items":
+				valid = (data.size() >= schema_level[constraint])
+			elif constraint == "max_items":
+				valid = (data.size() <= schema_level[constraint])
+
 			elif constraint == "allowed_values":
-				valid = (data in schema_level[constraint])
+				# check if any array item is not in allowed values
+				if schema_level['type'] == "array":
+					valid = true
+
+					for item in data:
+						if item not in schema_level[constraint]:
+							valid = false
+							break
+				else:
+					valid = (data in schema_level[constraint])
 
 			elif constraint == "unique":
 				var seen = []

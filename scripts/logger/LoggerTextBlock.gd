@@ -45,35 +45,6 @@ func set_value(value):
 func set_type(type: String):
 	_type = type
 
-# object destructor
-# func _notification(what):
-#     if (what == NOTIFICATION_PREDELETE):
-#         pass
-
-
-# scene lifecycle methods
-# called when node enters the tree
-# func _enter_tree():
-# 	pass
-
-# called once when node is ready
-# func _ready():
-#	pass
-
-# called when node exits the tree
-# func _exit_tree():
-#	pass
-
-
-# process methods
-# called during main loop processing
-# func _process(delta: float):
-#	pass
-
-# called during physics processing
-# func _physics_process(delta: float):
-#	pass
-
 # get the value as a string
 func value_as_string():
 	return "%s" % [_value]
@@ -176,7 +147,7 @@ func get_line_text():
 			value_lines[value_line_line_count+1].append(current_line_word)
 			value_line_line_count += 1
 			# value_line_word_count += 1
-			value_line_char_count = 0
+			value_line_char_count = len(current_line_word)
 
 			continue
 
