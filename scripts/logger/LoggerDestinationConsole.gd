@@ -14,6 +14,9 @@ extends LoggerDestination
 func _init():
 	pass
 
+func _to_string():
+	return "LoggerDestination"
+
 # object destructor
 # func _notification(what):
 #     if (what == NOTIFICATION_PREDELETE):
@@ -45,6 +48,8 @@ func _init():
 
 # setup instances of LoggerTextBlock for console output
 func setup_default_text_blocks():
+	_text_blocks = []
+
 	var processor_line_from_level = LoggerTextProcessorLineColorFromLevel.new().init(self)
 	var processor_log_level = LoggerTextProcessorLogLevel.new().init(self)
 	var processor_bold = LoggerTextProcessorBold.new().init(self)
@@ -54,33 +59,33 @@ func setup_default_text_blocks():
 		processor_line_from_level
 		]))
 
-	register_text_block(LoggerTextBlock.new().init("timestamp", 30, [
+	register_text_block(LoggerTextBlock.new().init("timestamp", config().padding_timestamp, [
 		LoggerTextProcessorTimestamp.new().init(self),
-		LoggerTextProcessorPad.new().init(self).set_pad(30),
+		LoggerTextProcessorPad.new().init(self).set_pad(config().padding_timestamp),
 		LoggerTextProcessorColor.new().init(self).set_color(config().color_timestamp),
 		processor_line_from_level,
 		]))
-	register_text_block(LoggerTextBlock.new().init("name", 25, [
+	register_text_block(LoggerTextBlock.new().init("name", config().padding_name, [
 		LoggerTextProcessorName.new().init(self),
-		LoggerTextProcessorPad.new().init(self).set_pad(25),
-		LoggerTextProcessorColor.new().init(self).set_color("orange", false),
+		LoggerTextProcessorPad.new().init(self).set_pad(config().padding_name),
+		LoggerTextProcessorColor.new().init(self).set_color(config().color_name, false),
 		processor_line_from_level,
 		]))
 
-	register_text_block(LoggerTextBlock.new().init("level", 10, [
-		LoggerTextProcessorPad.new().init(self).set_pad(10),
+	register_text_block(LoggerTextBlock.new().init("level", config().padding_log_level, [
+		LoggerTextProcessorPad.new().init(self).set_pad(config().padding_log_level),
 		processor_log_level,
 		processor_line_from_level,
 		processor_bold,
 		]))
 
-	register_text_block(LoggerTextBlock.new().init("value", 40, [
-		LoggerTextProcessorPad.new().init(self).set_pad(40),
-		LoggerTextProcessorColor.new().init(self).set_color("white", false),
+	register_text_block(LoggerTextBlock.new().init("value", config().padding_message, [
+		LoggerTextProcessorPad.new().init(self).set_pad(config().padding_message),
+		LoggerTextProcessorColor.new().init(self).set_color(config().color_message, false),
 		processor_line_from_level,
 		]))
-	register_text_block(LoggerTextBlock.new().init("data", 25, [
-		LoggerTextProcessorPad.new().init(self).set_pad(25),
+	register_text_block(LoggerTextBlock.new().init("data", config().padding_data, [
+		LoggerTextProcessorPad.new().init(self).set_pad(config().padding_data),
 		# LoggerTextProcessorData.new().init(self),
 		processor_line_from_level,
 		]))
@@ -98,7 +103,7 @@ func write_rendered():
 			basic_write_to_console()
 
 func config():
-	if Services.get_service("Config"):
-		return Services.Config.ConfigEngine.logger_console
+	if _config:
+		return _config.logger_console
 	else:
 		return DataResourceConfigEngine.new().data_from_schema().logger_console # gets all default values

@@ -59,3 +59,8 @@ func add_destination(logger_destination: LoggerDestination):
 	_logger_destinations.append(logger_destination)
 
 	return self
+
+# set config
+func set_config(config: DataResourceConfigEngine):
+	for logger_destination in _logger_destinations:
+		logger_destination.set_config(config)

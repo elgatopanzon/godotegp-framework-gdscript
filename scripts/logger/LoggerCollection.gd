@@ -137,3 +137,7 @@ func can_log_with_level(log_level: String):
 # process an EventLoggerLine event
 func process_event(event: EventLoggerLine):
 	log_to_loggers(event.get_time(), event.get_level(), event.get_value(), event.get_data_name(), event.get_data_value())
+
+func set_config(config: DataResourceConfigEngine):
+	for logger in _loggers:
+		logger.set_config(config)

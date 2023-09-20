@@ -139,9 +139,16 @@ func merge_resource(resource: DataResource):
 	if not has_schema():
 		_data = resource._data
 
+		emit_event_data_changed()
+
 		return Result.new(true)
 	else:
-		return process_resource_merge(resource, _data_schema, _data, resource._data)
+		var r =  process_resource_merge(resource, _data_schema, _data, resource._data)
+
+		if r.SUCCESS:
+			emit_event_data_changed()
+
+		return r
 
 # data schema methods
 # all schema methods accept a dict object to work on, so we can use the same methods for any nested level
@@ -202,7 +209,13 @@ func has_schema():
 # validate the current data against the schema
 func validate_data():
 	logger().debug("Beginning data validation", "data", _data)
-	return validate_schema_level()
+
+	var r = validate_schema_level()
+
+	if r.SUCCESS:
+		emit_event_data_changed()
+
+	return r
 
 # validate the given schema level recursively
 func validate_schema_level(schema_level: Dictionary = _data_schema, data = _data):
@@ -511,6 +524,8 @@ func _get(prop):
 		return _data[prop]
 	
 func _set(prop, value):
+	emit_event_data_changed()
+
 	if _data_schema['type'] == "dict":
 		_data[prop] = value
 
@@ -548,3 +563,6 @@ func data_from_schema(schema_level: Dictionary = _data_schema, data = {}):
 		data = schema_level.get("default", null)
 
 	return data
+
+func emit_event_data_changed():
+	Services.Events.emit_now(EventDataResourceChanged.new(self))

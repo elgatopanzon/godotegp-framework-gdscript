@@ -44,7 +44,7 @@ func _init():
 	}, prop_ldc)
 	schema_add_property("color_name", {
 		"prototype": "color_timestamp",
-		"default": "gray",
+		"default": "orange",
 	}, prop_ldc)
 	schema_add_property("color_level_debug", {
 		"prototype": "color_timestamp",
@@ -88,21 +88,25 @@ func _init():
 
 	schema_add_property("padding_timestamp", {
 		"type": "int",
-		"default": 10,
+		"default": 30,
 		"min_value": 10,
 		"max_value": 100,
 	}, prop_ldc)
 	schema_add_property("padding_name", {
 		"prototype": "padding_timestamp",
+		"default": 25,
 	}, prop_ldc)
 	schema_add_property("padding_log_level", {
 		"prototype": "padding_timestamp",
+		"default": 10,
 	}, prop_ldc)
 	schema_add_property("padding_message", {
 		"prototype": "padding_timestamp",
+		"default": 40,
 	}, prop_ldc)
 	schema_add_property("padding_data", {
 		"prototype": "padding_timestamp",
+		"default": 25,
 	}, prop_ldc)
 
 # friendly name when printing object

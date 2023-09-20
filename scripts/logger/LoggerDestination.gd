@@ -20,9 +20,23 @@ var _line_level
 var _line_value
 var _line_data
 
+var _config: DataResourceConfigEngine
+
 # object constructor
 func _init():
 	pass
+
+func set_config(config: DataResourceConfigEngine):
+	_config = config
+
+	# print("%s setting config" % self.to_string())
+	write(_line_time, self.to_string(), "debug", "Setting config")
+
+	# re-init the LoggerTextBlocks using the new config
+	setup_default_text_blocks()
+
+func _to_string():
+	return "LoggerDestination"
 
 # object destructor
 # func _notification(what):

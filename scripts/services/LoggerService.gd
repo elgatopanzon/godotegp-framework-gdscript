@@ -39,6 +39,22 @@ func _init(default_log_level: String = "debug"):
 
 	self.register_logger("default", self.to_string())
 
+	# subscribe to events about ConfigEngine changes using a deferred service call
+	Services.register_delayed_service_call("Events", Callable(self, "_on_EventService_registered"))
+
+func _on_EventService_registered():
+	Services.Events.subscribe(EventSubscription.new(self, EventDataResourceChanged, [EventFilterObjectType.new(DataResourceConfigEngine)]))
+
+func _on_EventDataResourceChanged__type_DataResourceConfigEngine(event):
+	logger().debug("Setting LoggerCollection configs", "event", event.to_dict())
+
+	set_config(event.get_owner())
+
+func set_config(config: DataResourceConfigEngine):
+	for lc in _logger_collections:
+		_logger_collections[lc].set_config(config)
+
+
 func logger():
 	return self.get(self.to_string())
 

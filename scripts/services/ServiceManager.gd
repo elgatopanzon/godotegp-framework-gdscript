@@ -15,6 +15,8 @@ signal service_deregistered(service)
 
 var _services: Dictionary
 
+var _call_queue: Dictionary
+
 # object constructor
 func _init():
 	pass
@@ -50,11 +52,21 @@ func register_service(service: Service, service_name: String):
 
 	add_child(service)
 
+	# emit signal
+	emit_signal("service_registered", service)
+
+	# perform any delayed calls
+	for call in _call_queue.get(service_name, []):
+		var callable = call.callable
+
+		for p in call.params:
+			callable.bind(p)
+
+		callable.call()
+
 	# call on_registered handler
 	service.on_registered()
 
-	# emit signal
-	emit_signal("service_registered", service)
 
 # deregister a service from the ServiceManager
 func deregister_service(service_name):
@@ -76,3 +88,10 @@ func get_service(service_name: String):
 # wraper to use property names for accessing services
 func _get(service_name):
 	return get_service(service_name)
+
+# queue a deferred call to a service to make upon it being registered
+func register_delayed_service_call(service_name: String, callable: Callable, params: Array = []):
+	if not _call_queue.get(service_name, null):
+		_call_queue[service_name] = []
+
+	_call_queue[service_name].append({"callable": callable, "params": params})
