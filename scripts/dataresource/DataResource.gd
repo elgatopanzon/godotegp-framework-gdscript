@@ -521,6 +521,14 @@ func _set(prop, value):
 		return true
 	else:
 		return false
+
+func get(prop, default = null):
+	var val = _get(prop)
+
+	if val == null:
+		val = default
+
+	return val
 	
 
 # get data object from schema defaults
