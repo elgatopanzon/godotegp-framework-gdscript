@@ -10,6 +10,9 @@
 class_name ServiceManager
 extends Node
 
+signal service_registered(service)
+signal service_deregistered(service)
+
 var _services: Dictionary
 
 # object constructor
@@ -50,6 +53,9 @@ func register_service(service: Service, service_name: String):
 	# call on_registered handler
 	service.on_registered()
 
+	# emit signal
+	emit_signal("service_registered", service)
+
 # deregister a service from the ServiceManager
 func deregister_service(service_name):
 	var service = self.get_service(service_name)
@@ -59,6 +65,9 @@ func deregister_service(service_name):
 
 		# call on_deregistered handler
 		service.on_deregistered()
+
+		# emit signal
+		emit_signal("service_deregistered", service)
 
 # get a registered service
 func get_service(service_name: String):

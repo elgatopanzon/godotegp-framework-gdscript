@@ -31,6 +31,9 @@ func logger():
 
 # object constructor
 func _init():
+	# connect signal to react on registered services
+	Services.connect("service_registered", Callable(self, "_on_service_registered"))
+
 	# init and register services
 	for service in _services:
 		Services.register_service(_services[service].new(), service)
@@ -135,3 +138,7 @@ func _init():
 # 	Services.Log.Test.debug("Received broadcasted EventBasic event", "event", event.to_dict())
 # func _on_EventTest(event: Event):
 # 	Services.Log.Test.debug("Received broadcasted EventTest event", "event", event.to_dict())
+
+# perform functionality on service being registered
+func _on_service_registered(service: Service):
+	pass
