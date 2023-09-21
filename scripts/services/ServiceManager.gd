@@ -55,6 +55,8 @@ func register_service(service: Service, service_name: String):
 	# emit signal
 	emit_signal("service_registered", service)
 
+	Services.register_delayed_service_call("Events", Callable(func(): Services.Events.emit_now(EventServiceRegistered.new(self, service_name))))
+
 	# perform any delayed calls
 	execute_delayed_service_calls(service_name)
 
@@ -74,6 +76,8 @@ func deregister_service(service_name):
 
 		# emit signal
 		emit_signal("service_deregistered", service)
+
+		Services.register_delayed_service_call("Events", Callable(func(): Services.Events.emit_now(EventServiceDeregistered.new(self, service_name))))
 
 # get a registered service
 func get_service(service_name: String):
