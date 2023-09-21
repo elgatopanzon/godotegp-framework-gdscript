@@ -212,9 +212,6 @@ func validate_data():
 
 	var r = validate_schema_level()
 
-	if r.SUCCESS:
-		emit_event_data_changed()
-
 	return r
 
 # validate the given schema level recursively
