@@ -23,7 +23,7 @@ var _default_log_level: String
 func _init(name: String):
 	set_name(name)
 
-	set_default_log_level("debug")
+	set_default_log_level(GodotEGPFramework.DEFAULT_LOG_LEVEL)
 
 	# create self LoggerCollection to allow us to log from here as early as possible
 	create_logger_collection(self.to_string(), _default_log_level)

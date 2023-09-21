@@ -31,7 +31,7 @@ func _init():
 	for class_info in global_class_list:
 		schema_add_property(class_info['class'], {
 			"type": "string",
-			"default": class_defaults.get(class_info['class'], "debug"),
+			"default": class_defaults.get(class_info['class'], GodotEGPFramework.DEFAULT_LOG_LEVEL),
 			"allowed_values": ALLOWED_LOG_LEVELS,
 		}, prop_logger_levels)
 

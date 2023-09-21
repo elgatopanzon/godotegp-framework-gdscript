@@ -10,6 +10,8 @@
 class_name GodotEGPFramework
 extends Node
 
+const DEFAULT_LOG_LEVEL = "debug"
+
 var _services: Dictionary = {
 	"Log": LoggerService, # init first so other services can use it
 	"Events": EventService,

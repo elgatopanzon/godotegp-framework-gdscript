@@ -29,9 +29,6 @@ func _init():
 func set_config(config: DataResourceConfigEngine):
 	_config = config
 
-	# print("%s setting config" % self.to_string())
-	write(_line_time, self.to_string(), "debug", "Setting config")
-
 	# re-init the LoggerTextBlocks using the new config
 	setup_default_text_blocks()
 
