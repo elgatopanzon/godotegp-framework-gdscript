@@ -192,7 +192,7 @@ func load_config_files():
 						load_config_errors.append(result.error)
 				else:
 					instance = get_config_instance(item)
-					var result = instance.validate_data()
+					var result = instance.init({})
 
 					if not result.SUCCESS:
 						load_config_errors.append(result.error)
