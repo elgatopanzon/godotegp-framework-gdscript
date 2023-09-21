@@ -263,3 +263,11 @@ func load_config_files():
 		return Result.new(false, error)
 	else:
 		return Result.new(true)
+
+# get a property from a config resource, returning a default value if it doesn't exist
+func get_instance_property(config_name: String, prop: String, default = null):
+	var instance = get_config_instance(config_name)
+	if instance:
+		return instance.get(prop, default)
+	else:
+		return default

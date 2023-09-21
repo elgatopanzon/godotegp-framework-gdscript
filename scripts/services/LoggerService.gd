@@ -50,9 +50,17 @@ func _on_EventDataResourceChanged__type_DataResourceConfigEngine(event):
 
 	set_config(event.get_owner())
 
+# set config from EngineConfig instance
 func set_config(config: DataResourceConfigEngine):
+	# pass down config to all LoggerCollections
 	for lc in _logger_collections:
-		_logger_collections[lc].set_config(config)
+		var lc_obj = _logger_collections[lc]
+		lc_obj.set_config(config)
+
+		# check for individual log levels for LoggerCollection instance
+		var logger_name = lc
+		if logger_name in config.logger_levels:
+			lc_obj.set_level(config.logger_levels.get(logger_name))
 
 
 func logger():

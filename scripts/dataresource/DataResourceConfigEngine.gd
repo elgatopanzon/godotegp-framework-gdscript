@@ -17,7 +17,25 @@ const ALLOWED_LOG_LEVELS = ["debug", "none", "info", "warning", "error", "critic
 func _init():
 	schema_set_type("dict") # expected data is a dict
 
-	# config for logger_console LoggerDestinationConfig
+	# config for class log levels 
+	var global_class_list = ProjectSettings.get_global_class_list()
+
+	var prop_logger_levels = schema_add_property("logger_levels", {
+		"type": "dict",
+	})
+
+	var class_defaults = {
+		"DataResourceConfigEngine": "info"
+	}
+
+	for class_info in global_class_list:
+		schema_add_property(class_info['class'], {
+			"type": "string",
+			"default": class_defaults.get(class_info['class'], "debug"),
+			"allowed_values": ALLOWED_LOG_LEVELS,
+		}, prop_logger_levels)
+
+	# config for logger 
 	var prop_logger = schema_add_property("logger", {
 		"type": "dict",
 	})
@@ -32,7 +50,7 @@ func _init():
 		"default": "info",
 	}, prop_logger)
 
-	# config for logger_console LoggerDestinationConfig
+	# config for logger_console LoggerDestinationConsole
 	var prop_ldc = schema_add_property("logger_console", {
 		"type": "dict",
 	})
@@ -115,7 +133,9 @@ func _to_string():
 
 # integration with Services.Log
 func logger():
-	Services.Log.get(self.to_string()).set_level("warning")
+	# apply the default log level now from the schema data
+	Services.Log.get(self.to_string()).set_level(DataResourceConfigEngine.new().data_from_schema().logger_levels.get(self.to_string()))
+
 	return Services.Log.get(self.to_string())
 
 # used by ObjectPool

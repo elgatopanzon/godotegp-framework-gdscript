@@ -334,42 +334,43 @@ func schema_validate_properties(schema_level: Dictionary, data = _data):
 			data.erase(property)
 
 	var invalid_properties = []
-	for property in schema_level['properties']:
+	if schema_level.get("properties", null):
+		for property in schema_level['properties']:
 
-		logger().debug("Schema property: validating", "property", property)
+			logger().debug("Schema property: validating", "property", property)
 
-		var property_exists = (data.get(property, null) != null)
+			var property_exists = (data.get(property, null) != null)
 
-		# handle when the property doesn't exist in the data we loaded
-		if not property_exists:
-			# check if property is required
-			var required = schema_level['properties'][property].get("required", null)
+			# handle when the property doesn't exist in the data we loaded
+			if not property_exists:
+				# check if property is required
+				var required = schema_level['properties'][property].get("required", null)
 
-			# init the default value if there is one
-			var default_value = schema_level['properties'][property].get("default", null)
+				# init the default value if there is one
+				var default_value = schema_level['properties'][property].get("default", null)
 
-			if required:
-				var error = Services.Events.error(self, "schema_required_property_missing", {"property": property})
+				if required:
+					var error = Services.Events.error(self, "schema_required_property_missing", {"property": property})
 
-				invalid_properties.append(error)
+					invalid_properties.append(error)
 
-			elif default_value:
-				data[property] = default_value
+				elif default_value:
+					data[property] = default_value
 
-				logger().debug("Schema property: setting default", "property", {"property": property, "default": default_value})
+					logger().debug("Schema property: setting default", "property", {"property": property, "default": default_value})
 
-			else:
-				var empty_default = schema_init_empty_value(schema_level['properties'][property])
+				else:
+					var empty_default = schema_init_empty_value(schema_level['properties'][property])
 
-				if empty_default != null:
-					data[property] = empty_default
+					if empty_default != null:
+						data[property] = empty_default
 
-		# check property is valid
-		if property not in invalid_properties:
-			var property_valid = validate_schema_level(schema_level['properties'][property], data.get(property, null))
+			# check property is valid
+			if property not in invalid_properties:
+				var property_valid = validate_schema_level(schema_level['properties'][property], data.get(property, null))
 
-			if not property_valid.SUCCESS:
-				invalid_properties.append(property_valid.error)
+				if not property_valid.SUCCESS:
+					invalid_properties.append(property_valid.error)
 
 	if invalid_properties.size():		
 		var error = Services.Events.error(self, "schema_properties_invalid", {"properties": invalid_properties})
@@ -496,17 +497,18 @@ func process_resource_merge(resource: DataResource, schema_level: Dictionary = _
 	logger().debug("Resource merge: starting")
 
 	if schema_level['type'] == "dict":
-		for property in schema_level['properties']:
-			if schema_level['properties'][property]['type'] == "dict":
-				var result = process_resource_merge(resource, schema_level['properties'][property], data.get(property), data_resource.get(property))
+		if schema_level.get("properties", null):
+			for property in schema_level['properties']:
+				if schema_level['properties'][property]['type'] == "dict":
+					var result = process_resource_merge(resource, schema_level['properties'][property], data.get(property), data_resource.get(property))
 
-				if not result.SUCCESS:
-					return result
-			else:
-				# override value if the data_resource value is different to the default
-				var default = schema_level['properties'][property].get("default", null)
-				if data_resource[property] != default and default != null:
-					data[property] = data_resource[property]
+					if not result.SUCCESS:
+						return result
+				else:
+					# override value if the data_resource value is different to the default
+					var default = schema_level['properties'][property].get("default", null)
+					if data_resource[property] != default and default != null:
+						data[property] = data_resource[property]
 
 		return Result.new(true)
 
@@ -549,14 +551,15 @@ func get(prop, default = null):
 # get data object from schema defaults
 func data_from_schema(schema_level: Dictionary = _data_schema, data = {}):
 	if schema_level['type'] == "dict":
-		for property in schema_level['properties']:
-			if schema_level['properties'][property]['type'] == "dict":
-				data[property] = data_from_schema(schema_level['properties'][property], data.get(property))
-			else:
-				# override value if the data_resource value is different to the default
-				if not data:
-					data = {}
-				data[property] = schema_level['properties'][property].get("default", null)
+		if schema_level.get("properties", null):
+			for property in schema_level['properties']:
+				if schema_level['properties'][property]['type'] == "dict":
+					data[property] = data_from_schema(schema_level['properties'][property], data.get(property))
+				else:
+					# override value if the data_resource value is different to the default
+					if not data:
+						data = {}
+					data[property] = schema_level['properties'][property].get("default", null)
 
 	# overwrite values
 	else:
