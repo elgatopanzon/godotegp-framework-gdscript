@@ -18,7 +18,9 @@ const CONFIG_INIT_CLASSES = ["ConfigEngine"]
 var _config_instances: Dictionary
 
 # object constructor
-func _init():
+func _init(name: String):
+	set_name(name)
+
 	# register instances for builtin configs
 	for instance in CONFIG_INIT_CLASSES:
 		register_config(instance)
@@ -35,7 +37,7 @@ func _init():
 			for ccerror in cerror.get_errors():
 				logger().debug("Config load child child error", "error", ccerror.to_dict())
 
-
+	set_ready()
 
 func init():
 	return self

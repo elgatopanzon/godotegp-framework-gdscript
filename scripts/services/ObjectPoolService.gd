@@ -13,8 +13,11 @@ extends Service
 var object_pools: Dictionary
 
 # object constructor
-func _init():
+func _init(name: String):
+	set_name(name)
 	Services.Log.register_logger("default", self.to_string())
+
+	set_ready()
 
 func logger():
 	return Services.Log.get(self.to_string())

@@ -13,7 +13,9 @@ extends Service
 var _system_objects: Dictionary
 
 # object constructor
-func _init():
+func _init(name: String):
+	set_name(name)
+
 	_system_objects["OS"] = OS
 	_system_objects["Time"] = Time
 	_system_objects["Engine"] = Engine
@@ -24,6 +26,7 @@ func _init():
 	if self.OS.is_debug_build():
 		_system_objects['build_type'] = "debug"
 
+	set_ready()
 
 func init():
 	return self

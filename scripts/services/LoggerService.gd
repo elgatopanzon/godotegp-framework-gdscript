@@ -20,8 +20,10 @@ var _logger_collections: Dictionary
 var _default_log_level: String
 
 # object constructor
-func _init(default_log_level: String = "debug"):
-	set_default_log_level(default_log_level)
+func _init(name: String):
+	set_name(name)
+
+	set_default_log_level("debug")
 
 	# create self LoggerCollection to allow us to log from here as early as possible
 	create_logger_collection(self.to_string(), _default_log_level)
@@ -104,6 +106,8 @@ func set_log_level(level: String):
 # process methods
 # called during main loop processing
 func _process(delta: float):
+	set_ready_once()
+
 	# process the queue
 	if _logger_event_queue.size() >= 100:
 		_logger_event_queue_process_max = 1

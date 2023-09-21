@@ -21,7 +21,6 @@ var _call_queue: Dictionary
 func _init():
 	pass
 
-
 # scene lifecycle methods
 # called when node enters the tree
 # func _enter_tree():
@@ -114,3 +113,8 @@ func execute_delayed_service_calls(service_name: String):
 				callable.bind(p)
 
 			callable.call()
+
+# check if a service is ready yet
+func service_ready(service_name: String):
+	if get_service(service_name):
+		return get_service(service_name).get_ready()

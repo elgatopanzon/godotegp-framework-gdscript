@@ -13,8 +13,12 @@ extends Service
 var _rng_instances: Dictionary
 
 # object constructor
-func _init():
+func _init(name: String):
+	set_name(name)
+
 	init_default_rng()
+
+	set_ready()
 
 func init():
 	return self

@@ -11,8 +11,10 @@ class_name DataServiceFS
 extends Service
 
 # object constructor
-func _init():
-	pass
+func _init(name: String):
+	set_name(name)
+
+	set_ready()
 
 func init():
 	return self

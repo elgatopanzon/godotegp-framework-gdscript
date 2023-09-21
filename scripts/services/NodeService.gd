@@ -17,7 +17,9 @@ var _signals_connected: bool = false
 var _signal_connections: Dictionary
 
 # object constructor
-func _init():
+func _init(name: String):
+	set_name(name)
+
 	Services.Events.register_queue(EventQueue.new(self, 1)) # register instant queue
 
 func init():
@@ -76,6 +78,8 @@ func _process(delta: float):
 		add_scene_tree_nodes()
 
 		_signals_connected = true
+
+		set_ready_once()
 
 func add_scene_tree_nodes():
 	for node in get_all_scene_tree_nodes():

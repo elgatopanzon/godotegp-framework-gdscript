@@ -13,8 +13,12 @@ extends Service
 
 var FS: DataServiceFS
 
-func _init():
+func _init(name: String):
+	set_name(name)
+
 	FS = Services.DataFS
+
+	set_ready()
 
 func init():
 	return self

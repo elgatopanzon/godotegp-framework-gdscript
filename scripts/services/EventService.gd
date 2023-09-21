@@ -15,7 +15,9 @@ var _event_queues: Dictionary
 var _subscriptions: Array[EventSubscription]
 
 # object constructor
-func _init():
+func _init(name: String):
+	set_name(name)
+
 	# register builtin event queues
 	register_queue(EventQueue.new("instant", 1))
 	register_queue(EventQueue.new("deferred", 2))
@@ -61,6 +63,8 @@ func reinit():
 # process methods
 # called during main loop processing
 func _process(delta: float):
+	set_ready_once()
+
 	for event_queue in _event_queues:
 		var queue = _event_queues[event_queue]
 

@@ -10,10 +10,35 @@
 class_name Service
 extends Node
 
-# object constructor
-func _init():
-	pass
+var _name: String
 
+# holds service ready state
+var _ready: bool = false
+
+# object constructor
+func _init(name: String):
+	set_name(name)
+
+	set_ready(true)
+
+func get_ready():
+	return _ready
+func set_ready(state: bool = true):
+	# execute on_ready
+	if state == true and _ready != true:
+		on_ready()
+
+	_ready = state
+
+func get_name():
+	return _name
+func set_name(name: String):
+	_name = name
+
+
+func set_ready_once():
+	if not get_ready():
+		set_ready()
 
 # scene lifecycle methods
 # called when node enters the tree
@@ -40,11 +65,15 @@ func _init():
 
 # called when service has been registered
 func on_registered():
-	on_ready()
+	pass
 
 # called when service has been deregistered
 func on_deregistered():
 	pass
 
 func on_ready():
-	pass
+	# emit service ready event
+	Services.register_delayed_service_call("Events", Callable(self, "_on_EventServiceRegistered_Events"))
+
+func _on_EventServiceRegistered_Events(event: Event = null):
+	Services.Events.emit_now(EventServiceReady.new(self, self.get_name()))

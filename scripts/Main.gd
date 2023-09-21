@@ -36,7 +36,7 @@ func _init():
 
 	# init and register services
 	for service in _services:
-		Services.register_service(_services[service].new(), service)
+		Services.register_service(_services[service].new(service), service)
 
 # scene lifecycle methods
 # called when node enters the tree
