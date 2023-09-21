@@ -52,7 +52,7 @@ func process(value, value_original):
 		"debug":
 			value = "[color=green]%s[/color]" % [value]
 		"info":
-			value = "[color=green]%s[/color]" % [value]
+			value = "[color=cyan]%s[/color]" % [value]
 		"warning":
 			value = "[color=orange]%s[/color]" % [value]
 		"error":
