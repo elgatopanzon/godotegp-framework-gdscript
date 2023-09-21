@@ -22,6 +22,14 @@ var _call_queue: Dictionary
 func _init():
 	pass
 
+# friendly name when printing object
+func _to_string():
+	return "ServiceManager"
+
+# integration with Services.Log
+func logger():
+	return Services.Log.get(self.to_string())
+
 # scene lifecycle methods
 # called when node enters the tree
 # func _enter_tree():
@@ -60,8 +68,11 @@ func services_ready():
 func set_services_ready(state: bool = true):
 	_services_ready = state
 
-	# emit event informing listeners when all services are ready
-	Services.Events.emit_now(EventServicesReady.new())
+	if state:
+		logger().info("Services ready")
+
+		# emit event informing listeners when all services are ready
+		Services.Events.emit_now(EventServicesReady.new())
 
 # register a Service object
 func register_service(service: Service, service_name: String):
