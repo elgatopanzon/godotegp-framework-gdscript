@@ -134,7 +134,7 @@ func _to_string():
 # integration with Services.Log
 func logger():
 	# apply the default log level now from the schema data
-	Services.Log.get(self.to_string()).set_level(DataResourceConfigEngine.new().data_from_schema().logger_levels.get(self.to_string()))
+	Services.Log.get(self.to_string()).set_level("info")
 
 	return Services.Log.get(self.to_string())
 
