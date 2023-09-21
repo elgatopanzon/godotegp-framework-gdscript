@@ -56,13 +56,7 @@ func register_service(service: Service, service_name: String):
 	emit_signal("service_registered", service)
 
 	# perform any delayed calls
-	for call in _call_queue.get(service_name, []):
-		var callable = call.callable
-
-		for p in call.params:
-			callable.bind(p)
-
-		callable.call()
+	execute_delayed_service_calls(service_name)
 
 	# call on_registered handler
 	service.on_registered()
@@ -95,3 +89,24 @@ func register_delayed_service_call(service_name: String, callable: Callable, par
 		_call_queue[service_name] = []
 
 	_call_queue[service_name].append({"callable": callable, "params": params})
+
+	execute_delayed_service_calls(service_name)
+
+# execute delayed service registered calls
+func execute_delayed_service_calls(service_name: String):
+	# if the service is available, execute the delayed call
+	if get_service(service_name):
+		var calls = _call_queue.get(service_name, [])
+
+		while true:
+			var call = calls.pop_front()
+
+			if not call:
+				break
+
+			var callable = call.callable
+
+			for p in call.params:
+				callable.bind(p)
+
+			callable.call()

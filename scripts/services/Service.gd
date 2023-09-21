@@ -40,8 +40,11 @@ func _init():
 
 # called when service has been registered
 func on_registered():
-	pass
+	on_ready()
 
 # called when service has been deregistered
 func on_deregistered():
+	pass
+
+func on_ready():
 	pass
