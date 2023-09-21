@@ -10,6 +10,8 @@
 class_name LoggerTextProcessorTimestamp
 extends LoggerTextProcessor
 
+var _previous_ms = 0
+
 # object constructor
 func _init():
 	pass
@@ -60,8 +62,18 @@ func process(value, value_original):
 	return "[%s] %s %s %s %s:%s:%s" % [get_engine_ticks(), str(current_time.day).pad_zeros(2), months[current_time.month], current_time.year, str(current_time.hour).pad_zeros(2), str(current_time.minute).pad_zeros(2), str(current_time.second).pad_zeros(2)]
 
 func get_engine_ticks():
+	var prev = _previous_ms
 	var tick = Time.get_ticks_msec()
+
+	var diff_str = "+"
+
+	var tick_diff = ceil(tick - prev)
+	if prev == 0:
+		tick_diff = 0
+
 	var ms = str(tick)
 	ms.erase(ms.length() - 1, 1)
-	var timestamp = str(tick/3600000).pad_zeros(2)+":"+str(tick/60000).pad_zeros(3)+":"+str(tick/1000).pad_zeros(4)+"."+ms.pad_zeros(8)
+	var timestamp = str(tick/3600000).pad_zeros(2)+":"+str(tick/60000).pad_zeros(3)+":"+str(tick/1000).pad_zeros(4)+"."+ms.pad_zeros(8)+" "+diff_str+str(tick_diff).pad_zeros(3)
+
+	_previous_ms = tick
 	return timestamp
