@@ -14,6 +14,7 @@ signal service_registered(service)
 signal service_deregistered(service)
 
 var _services: Dictionary
+var _services_ready: bool = false
 
 var _call_queue: Dictionary
 
@@ -37,13 +38,30 @@ func _init():
 
 # process methods
 # called during main loop processing
-# func _process(delta: float):
-# 	pass
+func _process(delta: float):
+	if not services_ready():
+		var ready_count = 0
+
+		for service in _services:
+			var s = _services[service]
+
+			if s.get_ready():
+				ready_count += 1
+
+		if ready_count == _services.size():
+			set_services_ready(true)
 
 # called during physics processing
 # func _physics_process(delta: float):
 # 	pass
 
+func services_ready():
+	return _services_ready
+func set_services_ready(state: bool = true):
+	_services_ready = state
+
+	# emit event informing listeners when all services are ready
+	Services.Events.emit_now(EventServicesReady.new())
 
 # register a Service object
 func register_service(service: Service, service_name: String):
