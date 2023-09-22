@@ -52,6 +52,10 @@ const TYPE_STRING_MAPPINGS: Dictionary = {
 	"max": TYPE_MAX,
 }
 
+var TYPE_STRING_FACTORIES: Dictionary = {
+	"vector2": DataResourceFactory.FactoryVector2,
+}
+
 var _data
 
 var _data_schema: Dictionary
@@ -212,6 +216,9 @@ func validate_data():
 
 	var r = validate_schema_level()
 
+	if r.SUCCESS:
+		_data = r._return_value
+
 	return r
 
 # validate the given schema level recursively
@@ -241,7 +248,7 @@ func validate_schema_level(schema_level: Dictionary = _data_schema, data = _data
 				return Result.new(false, ResultError.new(self, "instance_factory_not_supported"))
 
 			else:
-				var object_serialised = object_factory.serialise()
+				var object_serialised = object_factory.deserialise()
 
 				# if serialisation failed return the failed object
 				if not object_serialised.SUCCESS:
@@ -278,6 +285,8 @@ func validate_schema_level(schema_level: Dictionary = _data_schema, data = _data
 
 	if not valid.SUCCESS:
 		return valid
+	else:
+		data = valid._return_value
 
 	# validate properties for type dict
 	if schema_level['type'] == "dict":
@@ -297,7 +306,7 @@ func validate_schema_level(schema_level: Dictionary = _data_schema, data = _data
 	if not valid.SUCCESS:
 		return valid
 
-	return Result.new(true)
+	return Result.new(data)
 
 func schema_validate_type(schema_level: Dictionary = _data_schema, data = _data):
 	var valid = false
@@ -307,6 +316,16 @@ func schema_validate_type(schema_level: Dictionary = _data_schema, data = _data)
 	# validate using typeof
 	if schema_level['type'] in TYPE_STRING_MAPPINGS:
 		# cast to the expected number type if it's a valid number
+		if schema_level['type'] in DataResourceFactory.SUPPORTED_OBJECTS:
+			var factory = DataResourceFactory.new(schema_level['type'], data)
+
+			var deserialised = factory.deserialise()
+
+			if not deserialised.SUCCESS:
+				return deserialised
+
+			data = deserialised.value
+
 		if typeof(data) == TYPE_FLOAT and schema_level['type'] == "int":
 				data = int(data)
 
@@ -314,13 +333,18 @@ func schema_validate_type(schema_level: Dictionary = _data_schema, data = _data)
 
 		# check if the object instance is correct
 		if schema_level['type'] == "object":
-			var expected_instance = Services.ObjectPool.get_object_pool(schema_level['object']).instantiate()
+			var expected_instance = Services.ObjectPool.get_object_pool(schema_level['object'])
 
-			if data.get_script() != expected_instance.get_script():
-				Services.Events.error(self, "schema_object_mismatch", {"object": schema_level['object'], "actual_object": data})
-				valid = false
+			if expected_instance:
+				expected_instance = expected_instance.instantiate()
 
-			Services.ObjectPool.get_object_pool(schema_level['object']).return_instance(expected_instance)
+				if data.get_script() != expected_instance.get_script():
+					Services.Events.error(self, "schema_object_mismatch", {"object": schema_level['object'], "actual_object": data})
+					valid = false
+
+				Services.ObjectPool.get_object_pool(schema_level['object']).return_instance(expected_instance)
+			else:
+				valid = true
 			
 		if not valid:
 			var error = Services.Events.error(self, "schema_type_mismatch", {"type": schema_level['type'], "actual_type": schema_get_type_string(typeof(data)), "data": data})
@@ -335,7 +359,7 @@ func schema_validate_type(schema_level: Dictionary = _data_schema, data = _data)
 
 	logger().debug("Schema type: result", "result", valid)
 
-	return Result.new(valid)
+	return Result.new(data)
 
 func schema_validate_properties(schema_level: Dictionary, data = _data):
 	var valid = false
@@ -384,6 +408,8 @@ func schema_validate_properties(schema_level: Dictionary, data = _data):
 
 				if not property_valid.SUCCESS:
 					invalid_properties.append(property_valid.error)
+				else:
+					data[property] = property_valid._return_value
 
 	if invalid_properties.size():		
 		var error = Services.Events.error(self, "schema_properties_invalid", {"properties": invalid_properties})
@@ -533,19 +559,19 @@ func process_resource_merge(resource: DataResource, schema_level: Dictionary = _
 
 # allow getting values of a dict or array
 func _get(prop):
-	if _data_schema['type'] == "dict":
+	if _data_schema.get("type") == "dict":
 		return _data.get(prop, null)
-	elif _data_schema['type'] == "array":
+	elif _data_schema.get("type") == "array":
 		return _data[prop]
 	
 func _set(prop, value):
 	emit_event_data_changed()
 
-	if _data_schema['type'] == "dict":
+	if _data_schema.get("type") == "dict":
 		_data[prop] = value
 
 		return true
-	elif _data_schema['type'] == "array":
+	elif _data_schema.get("type") == "array":
 		_data[prop] = value
 
 		return true

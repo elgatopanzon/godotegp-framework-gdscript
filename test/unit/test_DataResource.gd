@@ -396,18 +396,36 @@ class TestDataResource:
 		assert_eq(data, {"value": true}, "Data from schema matches")
 
 	# object serialisation and deserialisation
-	func test_assert_object_serialisation_during_init():
+	func test_assert_object_deserialisation_from_data():
 		data_resource._data_schema = {
-			"type": "object",
-			"object": "Vector2"
+			"type": "vector2",
 		}
 
 		var data_resource_r = data_resource.init({"x": 1, "y": 2})
 
-		gut.p(data_resource_r.SUCCESS)
+		assert_true(data_resource_r.SUCCESS)
+
+		gut.p(data_resource._data)
 		if not data_resource_r.SUCCESS:
 			gut.p(data_resource_r.error.get_errors()[0].to_dict())
-			gut.p(data_resource._data)
+		else:
+			assert_eq(data_resource._data.x, 1, "x matches")
+			assert_eq(data_resource._data.y, 2, "y matches")
 
-		# assert_eq(data_resource._data.x, 1, "x matches")
-		# assert_eq(data_resource._data.y, 2, "y matches")
+			assert_true(typeof(data_resource._data) == TYPE_VECTOR2, "Deserialised type matches")
+
+	func test_assert_object_serialisation_from_data():
+		data_resource._data_schema = {
+			"type": "vector2",
+		}
+
+		var v = Vector2(2, 3)
+
+		var drf = DataResourceFactory.new("vector2", v)
+
+		var serialised = drf.serialise()
+
+		assert_eq(serialised.value.x, v.x, "Serialised object X matches")
+		assert_eq(serialised.value.y, v.y, "Serialised object Y matches")
+
+		assert_true(typeof(serialised.value) == TYPE_DICTIONARY, "Serialised type matches dictionary")
