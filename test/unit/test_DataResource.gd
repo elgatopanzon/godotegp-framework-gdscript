@@ -394,3 +394,20 @@ class TestDataResource:
 		var data = data_resource.data_from_schema()
 
 		assert_eq(data, {"value": true}, "Data from schema matches")
+
+	# object serialisation and deserialisation
+	func test_assert_object_serialisation_during_init():
+		data_resource._data_schema = {
+			"type": "object",
+			"object": "Vector2"
+		}
+
+		var data_resource_r = data_resource.init({"x": 1, "y": 2})
+
+		gut.p(data_resource_r.SUCCESS)
+		if not data_resource_r.SUCCESS:
+			gut.p(data_resource_r.error.get_errors()[0].to_dict())
+			gut.p(data_resource._data)
+
+		# assert_eq(data_resource._data.x, 1, "x matches")
+		# assert_eq(data_resource._data.y, 2, "y matches")

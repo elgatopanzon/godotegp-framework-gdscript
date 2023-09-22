@@ -233,29 +233,45 @@ func validate_schema_level(schema_level: Dictionary = _data_schema, data = _data
 	# if type was an object, load the data into the class's created instance
 	if schema_level['type'] == "object":
 		if typeof(data) != TYPE_OBJECT:
-			return Result.new(false, ResultError.new(self, "instance_not_valid"))
+			# serialse a supported object from a DataResourceFactory instance
+			var object_factory = DataResourceFactory.new(schema_level['object'], data)
 
-			# TODO: fix this and create suitable tests
-			var instance = schema_init_empty_value(schema_level)
+			# if the factory doesn't support the object type, return an error
+			if not object_factory.supported():
+				return Result.new(false, ResultError.new(self, "instance_factory_not_supported"))
 
-			if instance == null:
-				var error = Services.Events.error(self, "schema_object_invalid_class", {"schema": schema_level, "data": data})
-
-				error.add_error(instance.error)
-
-				return Result.new(false, error)
 			else:
-				var valid_instance = instance.instantiate().init(data)
+				var object_serialised = object_factory.serialise()
 
-				if valid_instance.SUCCESS:
-					data = valid_instance.value
-					
-					valid = true
-				else:
-					var error = Services.Events.error(self, "schema_object_validation_failed", {"schema": schema_level, "data": data})
-					error.add_error(valid_instance.error)
-					valid = false
-					return Result.new(false, error)
+				# if serialisation failed return the failed object
+				if not object_serialised.SUCCESS:
+					var error = Services.Events.error(self, "object_serialisation_failed", {"schema": schema_level, "data": data})
+					error.add_error(object_serialised.error)
+
+					return object_serialised
+
+				data = object_serialised.value
+
+			# var instance = schema_init_empty_value(schema_level)
+			#
+			# if instance == null:
+			# 	var error = Services.Events.error(self, "schema_object_invalid_class", {"schema": schema_level, "data": data})
+			#
+			# 	error.add_error(instance.error)
+			#
+			# 	return Result.new(false, error)
+			# else:
+			# 	var valid_instance = instance.instantiate().init(data)
+			#
+			# 	if valid_instance.SUCCESS:
+			# 		data = valid_instance.value
+			# 		
+			# 		valid = true
+			# 	else:
+			# 		var error = Services.Events.error(self, "schema_object_validation_failed", {"schema": schema_level, "data": data})
+			# 		error.add_error(valid_instance.error)
+			# 		valid = false
+			# 		return Result.new(false, error)
 
 	# validate the type
 	valid = schema_validate_type(schema_level, data)
